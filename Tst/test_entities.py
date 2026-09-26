@@ -4,7 +4,7 @@ from Src.Core.constants import NAME_MAX_LENGTH
 
 
 class test_entity(base_model):
-    """Класс-пустышка для проверки работы базовой модели"""
+    """Класс для проверки работы базовой модели"""
     pass
 
 
