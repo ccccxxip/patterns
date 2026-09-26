@@ -16,4 +16,4 @@
 ## Документация
 
 - [Домены и сущности](entities.md)
-- [Техническое задание](_docs/technicaltask.md)
+- [Техническое задание](Docs/technicaltask.md)
