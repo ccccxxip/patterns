@@ -3,13 +3,11 @@
         "name": "ООО Ромашка",
         "restaurant_count": 10
     },
-
     "working_hours": {
         "restaurant_start": "10:00",
         "restaurant_end": "22:00",
         "production_facility_24_7": true
     },
-
     "staff": {
         "categories": [
             "Производство",
@@ -19,14 +17,15 @@
         "max_shift_hours": 8,
         "overtime_multiplier": 2.0
     },
-
     "warehouse": {
         "inventory_period_days": 30
     },
-
     "delivery": {
         "enabled": true,
         "minimize_distance": true,
         "packaging_included": true
-    }
+    },
+    "is_first_start": true,
+    "boss_name": "Иванов И.И.",
+    "account_name": "Основной расчетный счет"
 }
