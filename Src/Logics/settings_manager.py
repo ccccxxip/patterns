@@ -2,6 +2,7 @@ import json
 from Src.Core.abstract_manager import abstract_manager
 from Src.Core.validator import validator, operation_exception
 from Src.Models.settings_model import settings_model
+from Src.Models.organization_model import organization_model
 
 
 class settings_manager(abstract_manager):
@@ -66,6 +67,18 @@ class settings_manager(abstract_manager):
         """
         if not self.__data:
             return False
+
+        # Загрузка организации. 
+        # Если данные некорректны или неполны - ошибка не глушится, а поднимается через внешний try/except в load()
+        if "organization" in self.__data:
+            org_data = self.__data["organization"]
+            self.__settings.organization = organization_model(
+                name=org_data["name"],
+                inn=org_data["inn"],
+                bik=org_data["bik"],
+                account=org_data["account"],
+                ownership_form=org_data["ownership_form"]
+            )
 
         # Если ключа нет, останется значение по умолчанию
         if "boss_name" in self.__data:
