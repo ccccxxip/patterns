@@ -1,21 +1,22 @@
 from abc import ABC
 
-"""
-Абстрактный класс для реализации загрузки и обработки данных 
-"""
-class abstract_manager(ABC):
-    # Полный путь к файлу
-    __file_name:str = ""
-    # Флаг. Загрузка и обработка завершения успешно 
-    __is_loaded:bool = False
-    __data:list = []
 
-    def load(self, file_name:str = "") -> None:
+class abstract_manager(ABC):
+    """Абстрактный класс для реализации загрузки и обработки данных"""
+
+    _file_name: str = ""
+    _is_loaded: bool = False
+    _data: list = []
+
+    def load(self, file_name: str = "") -> None:
+        """Загружает данные из источника (реализуется в наследниках)"""
         pass
 
     def convert(self) -> bool:
+        """Преобразует загруженные данные в доменную модель (реализуется в наследниках)"""
         return False
 
     @property
     def is_loaded(self) -> bool:
-        return self.__is_loaded
+        """Возвращает признак успешной загрузки и обработки данных"""
+        return self._is_loaded
