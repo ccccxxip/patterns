@@ -10,10 +10,10 @@ def test_validate_with_valid_string_type_returns_true():
     test_value = "Тестовая строка"
     expected_type = str
     
-    # Act (Действие)
+    # Действие
     result = validator.validate(test_value, expected_type)
     
-    # Assert (Проверка)
+    # Проверка
     assert result is True
 
 
@@ -21,18 +21,18 @@ def test_validate_with_invalid_type_raises_arguments_exception():
     """
     Проверка, что передача неверного типа (число вместо строки) вызывает ошибку
     """
-    # Arrange (Подготовка)
+    # Подготовка
     test_value = 12345
     expected_type = str
     is_raised = False
     
-    # Act (Действие)
+    # Действие
     try:
         validator.validate(test_value, expected_type)
     except arguments_exception:
         is_raised = True
         
-    # Assert (Проверка)
+    # Проверка
     assert is_raised is True
 
 
@@ -40,15 +40,15 @@ def test_validate_with_valid_length_returns_true():
     """
     Проверка, что передача строки нужной длины проходит успешно
     """
-    # Arrange (Подготовка)
+    # Подготовка
     test_value = "12345"
     expected_type = str
     expected_length = 5
     
-    # Act (Действие)
+    # Действие
     result = validator.validate(test_value, expected_type, expected_length)
     
-    # Assert (Проверка)
+    # Проверка
     assert result is True
 
 
@@ -56,17 +56,17 @@ def test_validate_with_invalid_length_raises_arguments_exception():
     """
     Проверка, что передача строки, превышающей лимит длины, вызывает ошибку
     """
-    # Arrange (Подготовка)
-    test_value = "123456"  # 6 символов (больше лимита)
+    # Подготовка
+    test_value = "123456" 
     expected_type = str
-    expected_length = 5    # Лимит 5 символов
+    expected_length = 5    # Лимит 
     is_raised = False
     
-    # Act (Действие)
+    # Действие
     try:
         validator.validate(test_value, expected_type, expected_length)
     except arguments_exception:
         is_raised = True
         
-    # Assert (Проверка)
+    # Проверка
     assert is_raised is True
