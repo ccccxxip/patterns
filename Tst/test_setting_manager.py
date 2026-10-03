@@ -1,83 +1,142 @@
 import pytest
+import json
+import tempfile
+import os
 from Src.Logics.settings_manager import settings_manager
 from Src.Core.exception import arguments_exception
+from Src.Core.validator import operation_exception
 
 
 def test_not_raise_settings_manager_load():
-    """ 
-    Сценарий: вызов метода load() без передачи аргументов
-    Ожидаемый результат: метод подхватывает путь по умолчанию и не вызывает исключений
     """
-    # Подготовка: создаем экземпляр менеджера настроек
+    Проверка, что метод load() отрабатывает без выброса исключений 
+    при загрузке настроек по умолчанию
+    """
+    # Подготовка
     manager = settings_manager()
+    is_exception = False
     
-    # Действие и Проверка: 
-    # Пытаемся загрузить данные 
-    # Если возникает ошибка, тест перехватывает её и принудительно завершается с ошибкой
+    # Действие
     try:
         manager.load()
-    except Exception as e:
-        pytest.fail(f"Метод load() вызвал исключение: {e}")
+    except Exception:
+        is_exception = True
+        
+    # Проверка
+    assert is_exception is False
 
 
 def test_not_empty_settings_manager_load():
-    """ 
-    Сценарий: успешная загрузка файла настроек
-    Ожидаемый результат: свойство settings заполняется данными и перестает быть пустым
     """
-    # Подготовка: создаем экземпляр менеджера
+    Проверка, что после загрузки настроек модель settings не пустая
+    """
+    # Подготовка
     manager = settings_manager()
     
-    # Действие: вызываем загрузку данных из файла
+    # Действие
     manager.load()
     
-    # Проверка: утверждаем, что коробка с настройками успешно заполнилась
+    # Проверка
     assert manager.settings is not None
 
 
 def test_equals_settings_manager_create():
-    """ 
-    Сценарий: многократное создание settings_manager
-    Ожидаемый результат: благодаря Singleton всегда возвращается один и тот же объект в памяти
     """
-    # Подготовка и Действие: пытаемся создать два независимых экземпляра
+    Проверка работы паттерна Singleton: два созданных экземпляра 
+    менеджера должны являться одним и тем же объектом
+    """
+    # Подготовка / Действие
     instance1 = settings_manager()
     instance2 = settings_manager()
     
-    # Проверка: убеждаемся, что оба существуют, и утверждаем, что это один и тот же объект
+    # Проверка
     assert instance1 is not None
     assert instance2 is not None
     assert instance1 == instance2
 
 
 def test_is_loaded_settings_manager_true():
-    """ 
-    Сценарий: успешная загрузка данных менеджером
-    Ожидаемый результат: флаг is_loaded переключается в True
     """
-    # Подготовка: создаем экземпляр менеджера
+    Проверка, что флаг is_loaded устанавливается в True после успешного вызова load()
+    """
+    # Подготовка
     manager = settings_manager()
     
-    # Действие: загружаем данные
+    # Действие
     manager.load()
     
-    # Проверка: утверждаем, что флаг успешной загрузки активен
+    # Проверка
     assert manager.is_loaded is True
 
 
 def test_same_settings_in_different_instances():
-    """ 
-    Сценарий: загрузка данных через один экземпляр Singleton и проверка через другой
-    Ожидаемый результат: данные автоматически доступны во всех экземплярах, тк объект общий
     """
-    # Подготовка: получаем две ссылки на менеджер
+    Проверка, что у разных экземпляров менеджера (Singleton) 
+    настройки ссылаются на одни и те же данные
+    """
+    # Подготовка
     instance1 = settings_manager()
     instance2 = settings_manager()
     
-    # Действие: загружаем настройки через первый экземпляр
+    # Действие
     instance1.load()
     
-    # Проверка: утверждаем, что настройки появились у обоих менеджеров и они одинаковые
+    # Проверка
     assert instance1.settings is not None
     assert instance2.settings is not None
     assert instance1.settings == instance2.settings
+
+
+def test_settings_manager_load_populates_organization_from_json():
+    """
+    Проверка, что при корректной загрузке JSON 
+    данные организации успешно парсятся и сохраняются в модели
+    """
+    # Подготовка
+    manager = settings_manager()
+    
+    # Действие
+    manager.load()
+    organization = manager.settings.organization
+
+    # Проверка
+    assert organization is not None
+    assert organization.name == "ООО Ромашка"
+    assert organization.inn == "7701234567"
+
+
+def test_settings_manager_load_with_incomplete_organization_raises_operation_exception():
+    """
+    Проверка, что загрузка файла с неполными данными об организации 
+    перехватывается и вызывает исключение operation_exception
+    """
+    # Подготовка
+    broken_data = {
+        "organization": {
+            "name": "ООО Ромашка",
+            "inn": "7701234567"
+        },
+        "is_first_start": True,
+        "boss_name": "Иванов И.И.",
+        "account_name": "Основной расчетный счет",
+    }
+
+    # Создаем временный файл с кривым JSON
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmp_file:
+        json.dump(broken_data, tmp_file, ensure_ascii=False)
+        tmp_path = tmp_file.name
+
+    manager = settings_manager()
+    is_exception = False
+
+    # Действие
+    try:
+        manager.load(tmp_path)
+    except operation_exception:
+        is_exception = True
+    finally:
+        # Убираем временный файл 
+        os.remove(tmp_path)
+
+    # Проверка
+    assert is_exception is True
