@@ -15,22 +15,27 @@ class storage_manager(abstract_manager):
     Отвечает за первичное наполнение данных при первом запуске программы
     """
 
-    __data: dict = {}
+    __data: dict = None
 
     def __new__(cls):
         """ 
         Singleton: гарантирует создание только одного экземпляра хранилища 
-        и инициализирует базовую структуру словаря для списков объектов
         """
         if not hasattr(cls, 'instance'):
             cls.instance = super(storage_manager, cls).__new__(cls)
-            cls.instance.__data = {
+        return cls.instance
+
+    def __init__(self):
+        """
+        Инициализация словарей хранилища при первом создании объекта.
+        """
+        if self.__data is None:
+            self.__data = {
                 "warehouse": [],
                 "unit": [],
                 "group": [],
                 "nomenclature": []
             }
-        return cls.instance
 
     def load(self, file_name: str = "") -> None:
         """
@@ -99,10 +104,8 @@ class storage_manager(abstract_manager):
         if key not in self.__data:
             self.__data[key] = []
 
-        # Защита от дубликатов на основе метода __eq__ базовой модели
         if item not in self.__data[key]:
             self.__data[key].append(item)
-
 
     @property
     def data(self) -> dict:
