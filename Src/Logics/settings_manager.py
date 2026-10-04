@@ -40,7 +40,7 @@ class settings_manager(abstract_manager):
         Загружает данные из JSON
         
         file_name: Путь к файлу. Если не передан или пуст, используется путь по умолчанию
-        raises operation_exception: При ошибке чтения файла или неверном формате данных
+        raises operation_exception: При ошибке чтения файла (файл не найден, битый JSON и т.д.)
         """
         
         # Если передали None или пустую строку (включ. пробелы) — путь по умолчанию
@@ -64,21 +64,32 @@ class settings_manager(abstract_manager):
         """
         Переносит данные из черновика __data в чистую модель __settings
         Защищает от ситуаций, когда в JSON отсутствуют ключи
+        Неполные данные не прерывают загрузку исключением -
+        возвращается False, что отражается на флаге is_loaded.
         """
         if not self.__data:
             return False
 
-        # Загрузка организации. 
-        # Если данные некорректны или неполны - ошибка не глушится, а поднимается через внешний try/except в load()
+        success = True
+
+        # Загрузка организации. Сначала проверяем, что есть нужные ключи,
+        # и потом создаём объект - без надежды поймать исключение
         if "organization" in self.__data:
             org_data = self.__data["organization"]
-            self.__settings.organization = organization_model(
-                name=org_data["name"],
-                inn=org_data["inn"],
-                bik=org_data["bik"],
-                account=org_data["account"],
-                ownership_form=org_data["ownership_form"]
-            )
+            required_keys = {"name", "inn", "bik", "account", "ownership_form"}
+
+            if isinstance(org_data, dict) and required_keys.issubset(org_data.keys()):
+                self.__settings.organization = organization_model(
+                    name=org_data["name"],
+                    inn=org_data["inn"],
+                    bik=org_data["bik"],
+                    account=org_data["account"],
+                    ownership_form=org_data["ownership_form"]
+                )
+            else:
+                # не хватает обязательных полей - организацию не создаём,
+                # но весь load() не падает
+                success = False
 
         # Если ключа нет, останется значение по умолчанию
         if "boss_name" in self.__data:
@@ -90,7 +101,7 @@ class settings_manager(abstract_manager):
         if "is_first_start" in self.__data:
             self.__settings.is_first_start = bool(self.__data["is_first_start"])
 
-        return True
+        return success
 
     @property  
     def settings(self) -> settings_model:  

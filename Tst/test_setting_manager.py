@@ -3,8 +3,6 @@ import json
 import tempfile
 import os
 from Src.Logics.settings_manager import settings_manager
-from Src.Core.exception import arguments_exception
-from Src.Core.validator import operation_exception
 
 
 def test_not_raise_settings_manager_load():
@@ -42,7 +40,7 @@ def test_not_empty_settings_manager_load():
 
 def test_equals_settings_manager_create():
     """
-    Проверка работы паттерна Singleton: два созданных экземпляра 
+    Проверка работы Singleton: два созданных экземпляра 
     менеджера должны являться одним и тем же объектом
     """
     # Подготовка / Действие
@@ -105,10 +103,10 @@ def test_settings_manager_load_populates_organization_from_json():
     assert organization.inn == "7701234567"
 
 
-def test_settings_manager_load_with_incomplete_organization_raises_operation_exception():
+def test_settings_manager_load_with_incomplete_organization_sets_is_loaded_false():
     """
-    Проверка, что загрузка файла с неполными данными об организации 
-    перехватывается и вызывает исключение operation_exception
+    Проверка, что загрузка неполных данных об организации не вызывает исключение,
+    а переводит флаг is_loaded в False
     """
     # Подготовка
     broken_data = {
@@ -121,10 +119,84 @@ def test_settings_manager_load_with_incomplete_organization_raises_operation_exc
         "account_name": "Основной расчетный счет",
     }
 
-    # Создаем временный файл с кривым JSON
     with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmp_file:
         json.dump(broken_data, tmp_file, ensure_ascii=False)
         tmp_path = tmp_file.name
+
+    if hasattr(settings_manager, "instance"):
+        del settings_manager.instance
+
+    manager = settings_manager()
+
+    # Действие
+    try:
+        manager.load(tmp_path)
+    finally:
+        os.remove(tmp_path)
+
+    # Проверка
+    assert manager.is_loaded is False
+    assert manager.settings.organization is None
+    assert manager.settings.boss_name == "Иванов И.И."
+
+
+def test_settings_manager_load_with_missing_inn_key_sets_is_loaded_false():
+    """
+    Проверка конкретного сценария: отсутствие ключа 'inn' не ломает программу,
+    а устанавливает is_loaded в False
+    """
+    # Подготовка
+    broken_data = {
+        "organization": {
+            "name": "ООО Ромашка",
+            "bik": "044525225",
+            "account": "40702810938000012345",
+            "ownership_form": "ООО",
+        },
+        "is_first_start": True,
+        "boss_name": "Иванов И.И.",
+        "account_name": "Основной расчетный счет",
+    }
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmp_file:
+        json.dump(broken_data, tmp_file, ensure_ascii=False)
+        tmp_path = tmp_file.name
+
+    if hasattr(settings_manager, "instance"):
+        del settings_manager.instance
+
+    manager = settings_manager()
+
+    # Действие
+    try:
+        manager.load(tmp_path)
+    finally:
+        os.remove(tmp_path)
+
+    # Проверка
+    assert manager.is_loaded is False
+    assert manager.settings.organization is None
+
+
+def test_settings_manager_load_with_organization_as_wrong_type_sets_is_loaded_false():
+    """
+    Проверка, что передача строки вместо словаря в блоке organization
+    безопасно обрабатывается менеджером
+    """
+    # Подготовка
+    broken_data = {
+        "organization": "это не словарь",
+        "is_first_start": True,
+        "boss_name": "Иванов И.И.",
+        "account_name": "Основной расчетный счет",
+    }
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False, encoding="utf-8") as tmp_file:
+        json.dump(broken_data, tmp_file, ensure_ascii=False)
+        tmp_path = tmp_file.name
+
+    if hasattr(settings_manager, "instance"):
+        del settings_manager.instance
 
     manager = settings_manager()
     is_exception = False
@@ -132,11 +204,11 @@ def test_settings_manager_load_with_incomplete_organization_raises_operation_exc
     # Действие
     try:
         manager.load(tmp_path)
-    except operation_exception:
+    except Exception:
         is_exception = True
     finally:
-        # Убираем временный файл 
         os.remove(tmp_path)
 
     # Проверка
-    assert is_exception is True
+    assert is_exception is False
+    assert manager.is_loaded is False
