@@ -73,3 +73,43 @@ class unit_model(base_model):
             raise arguments_exception("quantity", "Количество должно быть числом")
 
         return quantity * self.ratio
+
+    # Фабричные методы
+    # Производные единицы принимают базовую единицу параметром, чтобы в хранилище
+    # у литра, ложек и килограмма была ссылка на тот же объект (мл или г), а не на копию.
+    # Если базовую единицу не передать, она создаётся внутри
+
+    @staticmethod
+    def create_gram() -> "unit_model":
+        """ Фабричный метод: грамм (базовая единица массы) """
+        return unit_model("Грамм (г)", 1.0)
+
+    @staticmethod
+    def create_milliliter() -> "unit_model":
+        """ Фабричный метод: миллилитр (базовая единица объема) """
+        return unit_model("Миллилитр (мл)", 1.0)
+
+    @staticmethod
+    def create_piece() -> "unit_model":
+        """ Фабричный метод: штука """
+        return unit_model("Штука (шт)", 1.0)
+
+    @staticmethod
+    def create_kilogram(gram: "unit_model" = None) -> "unit_model":
+        """ Фабричный метод: килограмм (1000 г) """
+        return unit_model("Килограмм (кг)", 1000.0, gram if gram is not None else unit_model.create_gram())
+
+    @staticmethod
+    def create_liter(milliliter: "unit_model" = None) -> "unit_model":
+        """ Фабричный метод: литр (1000 мл) """
+        return unit_model("Литр (л)", 1000.0, milliliter if milliliter is not None else unit_model.create_milliliter())
+
+    @staticmethod
+    def create_tablespoon(milliliter: "unit_model" = None) -> "unit_model":
+        """ Фабричный метод: столовая ложка (15 мл) """
+        return unit_model("Столовая ложка (ст.л.)", 15.0, milliliter if milliliter is not None else unit_model.create_milliliter())
+
+    @staticmethod
+    def create_teaspoon(gram: "unit_model" = None) -> "unit_model":
+        """ Фабричный метод: чайная ложка соли (7 г) """
+        return unit_model("Чайная ложка (ч.л.)", 7.0, gram if gram is not None else unit_model.create_gram())
