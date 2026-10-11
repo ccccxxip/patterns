@@ -8,7 +8,7 @@ from Src.Models.unit_model import unit_model
 class recipe_model(base_model):
     """
     Доменная модель: Технологическая карта (рецепт)
-    Владелец рецепта - номенклатура: готовое блюдо или полуфабрикат
+    Владелец рецепта (owner) - номенклатура: готовое блюдо или полуфабрикат
     Вес Брутто и Нетто рецепта - сумма весов всех ингредиентов
     """
 
@@ -79,14 +79,28 @@ class recipe_model(base_model):
         """Возвращает копию списка ингредиентов (менять состав можно только через add/remove)"""
         return list(self._ingredients)
 
+    def uses_recipe(self, recipe: "recipe_model") -> bool:
+        """ Возвращает True, если указанный рецепт входит в этот рецепт (прямо или через вложенные рецепты) """
+        for ingredient in self._ingredients:
+            sub_recipe = ingredient.recipe
+            if sub_recipe is not None and (sub_recipe is recipe or sub_recipe.uses_recipe(recipe)):
+                return True
+
+        return False
+
     def add_ingredient(self, ingredient: ingredient_model) -> None:
         """
         Добавляет ингредиент в рецепт
 
-        raises arguments_exception: Если передан не ingredient_model
+        raises arguments_exception: Если передан не ingredient_model или рецепт попытались включить сам в себя
         """
         if not isinstance(ingredient, ingredient_model):
             raise arguments_exception("ingredient", "Ингредиент должен быть объектом ingredient_model")
+
+        # Защита от зацикливания: рецепт не может содержать сам себя
+        sub_recipe = ingredient.recipe
+        if sub_recipe is not None and (sub_recipe is self or sub_recipe.uses_recipe(self)):
+            raise arguments_exception("ingredient", "Рецепт не может содержать сам себя")
 
         self._ingredients.append(ingredient)
 
@@ -111,6 +125,7 @@ class recipe_model(base_model):
                             salt: nomenclature_model) -> "recipe_model":
         """
         Фабричный метод: рецепт полуфабриката "Сливочно-грибной соус"
+        Рецепт рассчитан на 2 порции соуса
 
         Количество ингредиентов указано в единицах самой номенклатуры
         (сливки в литрах, масло в столовых ложках, соль в чайных ложках)
@@ -118,7 +133,7 @@ class recipe_model(base_model):
         """
         recipe = recipe_model(
             "Приготовление соуса", sauce,
-            "Обжарить чеснок, курицу и шампиньоны, добавить сливки и соль, тушить 3-4 минуты", 1
+            "Обжарить чеснок, курицу и шампиньоны, добавить сливки и соль, тушить 3-4 минуты", 2
         )
 
         recipe.add_ingredient(ingredient_model.create(chicken, 150, 160))
@@ -136,10 +151,11 @@ class recipe_model(base_model):
         """
         Фабричный метод: рецепт готового блюда "Паста сливочная с курицей"
 
-        Содержит полуфабрикат (соус, вес берется из его рецепта) и упаковку
+        Составной рецепт: содержит полуфабрикат (1 порцию соуса по рецепту соуса) и упаковку.
+        Расход ингредиентов соуса пересчитывается пропорционально взятому количеству
 
         dish: Номенклатура готового блюда
-        sauce_recipe: Рецепт соуса (его владелец - полуфабрикат)
+        sauce_recipe: Рецепт соуса на 2 порции (его владелец - полуфабрикат)
         gram: Единица "грамм" для веса упаковки
         """
         recipe = recipe_model(
@@ -147,14 +163,14 @@ class recipe_model(base_model):
             "Отварить пасту до состояния альденте, смешать с соусом, посыпать пармезаном, упаковать", 1
         )
 
-        sauce = sauce_recipe.owner
+        # В блюдо идет одна порция соуса из двух (219.25 г Нетто)
+        sauce_portion = sauce_recipe.total_net_weight / sauce_recipe.portions
 
         recipe.add_ingredient(ingredient_model.create(pasta, 100, 100))
-        # Полуфабрикат: вес берем из рецепта соуса
-        recipe.add_ingredient(ingredient_model(sauce, sauce_recipe.total_net_weight, sauce_recipe.total_gross_weight, sauce.unit))
+        # Полуфабрикат: ссылка на рецепт соуса, Брутто считается пропорционально
+        recipe.add_ingredient(ingredient_model.create_from_recipe(sauce_recipe, sauce_portion))
         recipe.add_ingredient(ingredient_model.create(parmesan, 30, 32))
         # Упаковка: в Нетто блюда не входит (0), в Брутто 20 г для списания
-        # Упаковку добавлять необязательно 
         recipe.add_ingredient(ingredient_model(box, 0, 20, gram))
 
         return recipe
