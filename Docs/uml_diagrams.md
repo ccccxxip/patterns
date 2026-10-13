@@ -1,178 +1,88 @@
-## settings_manager
-
-### Описание
-
-`settings_manager` — менеджер настроек приложения, реализованный как **Singleton**. Отвечает за загрузку данных из JSON (`load()`) и их конвертацию (`convert()`) в типизированную модель `settings_model`, которая включает в себя реквизиты компании (`organization_model`). Все параметры защищены валидацией через `validator`.
+## UML диаграмма моделей рецептов
 
 ```mermaid
 classDiagram
-    class abstract_manager {
-        <<abstract>>
-        #_file_name: str
-        #_is_loaded: bool
-        #_data: list
-        +load(file_name: str) None
-        +convert() bool
-        +is_loaded: bool
-    }
-
     class base_model {
         <<abstract>>
-        #_id: str
-        #_name: str
         +id: str
         +name: str
     }
 
-    class settings_manager {
-        <<Singleton>>
-        -__default_file_name: str$
-        -__settings: settings_model
-        -__data: dict
-        +__new__(cls) settings_manager$
-        +__init__() None
-        +load(file_name: str) None
-        +convert() bool
-        +settings: settings_model
+    class nomenclature_type {
+        <<enumeration>>
+        PRODUCT
+        SEMI_FINISHED
+        PACKAGING
     }
 
-    class settings_model {
-        -__organization: organization_model
-        -__boss_name: str
-        -__account_name: str
-        -__is_first_start: bool
-        +organization: organization_model
-        +boss_name: str
-        +account_name: str
-        +is_first_start: bool
-    }
-
-    class organization_model {
-        +inn: str
-        +bik: str
-        +account: str
-        +ownership_form: str
-    }
-
-    class validator {
-        <<utility>>
-        +validate(value, type_, len_, field_name) bool$
-    }
-
-    class operation_exception {
-        <<exception>>
-    }
-
-
-    abstract_manager <|-- settings_manager : наследование
-    base_model <|-- settings_model : наследование
-    base_model <|-- organization_model : наследование
-
-    settings_manager *-- settings_model : создаёт и хранит
-    settings_model o-- organization_model : агрегирует реквизиты
-
-    settings_manager ..> validator : использует
-    settings_manager ..> operation_exception : выбрасывает
-    settings_model ..> validator : использует
-```
-
-## storage_manager
-
-### Описание
-
-`storage_manager` — менеджер хранилища данных, реализованный как **Singleton**. Отвечает за хранение и управление доменными сущностями в памяти (`__data`), обеспечение уникальности записей через метод `add()` (который также использует `validator` для проверки ключа справочника), а также за автоматическую генерацию базовых справочников при первом запуске приложения (проверяя флаг `is_first_start`, который хранится в `settings_model`, получаемом через `settings_manager`).
-
-Все доменные модели (`unit_model`, `warehouse_model`, `nomenclature_model`, `nomenclature_group_model`) наследуются от общего абстрактного класса `base_model`.
-
-```mermaid
-classDiagram
-    class abstract_manager {
-        <<abstract>>
-        #_file_name: str
-        #_is_loaded: bool
-        #_data: list
-        +load(file_name: str) None
-        +convert() bool
-        +is_loaded: bool
-    }
-    
-    class base_model {
-        <<abstract>>
-        #_id: str
-        #_name: str
-        +id: str
-        +name: str
-    }
-
-    class storage_manager {
-        <<Singleton>>
-        -__data: dict
-        +__new__(cls) storage_manager$
-        +load(file_name: str) None
-        +convert() bool
-        +add(key: str, item) None
-        +data: dict
-        +warehouses: list
-        +units: list
-        +groups: list
-        +nomenclatures: list
-    }
-
-    class nomenclature_model {
-        -__full_name: str
-        -__group: nomenclature_group_model
-        -__unit: unit_model
-        +full_name: str
-        +group: nomenclature_group_model
-        +unit: unit_model
-    }
-    
     class nomenclature_group_model {
-        <<model>>
+        +create_ingredients() nomenclature_group_model$
+        +create_raw() nomenclature_group_model$
+        +create_semi_finished() nomenclature_group_model$
+        +create_packaging() nomenclature_group_model$
+        +create_finished() nomenclature_group_model$
     }
-    
+
     class unit_model {
-        -__ratio: float
-        -__base_unit: unit_model
         +ratio: float
         +base_unit: unit_model
         +to_base(quantity: float) float
-    }
-    
-    class warehouse_model {
-        -__address: str
-        +address: str
-    }
-
-    class settings_manager {
-        +settings: settings_model
-    }
-    class settings_model {
-        +is_first_start: bool
-    }
-    class validator {
-        <<utility>>
-        +validate(value, type_, len_, field_name) bool$
+        +create_gram() unit_model$
+        +create_milliliter() unit_model$
+        +create_piece() unit_model$
+        +create_kilogram(gram) unit_model$
+        +create_liter(milliliter) unit_model$
+        +create_tablespoon(milliliter) unit_model$
+        +create_teaspoon(gram) unit_model$
     }
 
+    class nomenclature_model {
+        +full_name: str
+        +group: nomenclature_group_model
+        +unit: unit_model
+        +type: nomenclature_type
+        +create_product() nomenclature_model$
+        +create_semi_finished() nomenclature_model$
+        +create_packaging() nomenclature_model$
+    }
 
-    abstract_manager <|-- storage_manager
-    base_model <|-- unit_model
-    base_model <|-- warehouse_model
+    class ingredient_model {
+        +nomenclature: nomenclature_model
+        +net_weight: float
+        +gross_weight: float
+        +unit: unit_model
+        +recipe: recipe_model
+        +create(nomenclature, net_quantity, gross_quantity) ingredient_model$
+        +create_from_recipe(recipe, net_quantity) ingredient_model$
+    }
+
+    class recipe_model {
+        +owner: nomenclature_model
+        +preparation_method: str
+        +portions: int
+        +ingredients: list~ingredient_model~
+        +total_net_weight: float
+        +total_gross_weight: float
+        +add_ingredient(ingredient_model)
+        +remove_ingredient(ingredient_model)
+        +uses_recipe(recipe_model) bool
+        +create_sauce_recipe() recipe_model$
+        +create_pasta_recipe() recipe_model$
+    }
+
     base_model <|-- nomenclature_group_model
+    base_model <|-- unit_model
     base_model <|-- nomenclature_model
+    base_model <|-- ingredient_model
+    base_model <|-- recipe_model
 
-    storage_manager o-- unit_model : хранит
-    storage_manager o-- warehouse_model : хранит
-    storage_manager o-- nomenclature_group_model : хранит
-    storage_manager o-- nomenclature_model : хранит
-
-    nomenclature_model --> nomenclature_group_model : ссылается
-    nomenclature_model --> unit_model : ссылается
-    unit_model --> unit_model : базовая ед.
-
-    storage_manager --> settings_manager : запрашивает
-    settings_manager --> settings_model : содержит
-    storage_manager ..> settings_model : проверяет флаг
-    storage_manager ..> validator : валидирует
+    recipe_model "1" *-- "many" ingredient_model : содержит
+    recipe_model "1" --> "1" nomenclature_model : владелец
+    ingredient_model "many" --> "1" nomenclature_model : ссылается на
+    ingredient_model "many" --> "1" unit_model : измеряется в
+    ingredient_model "many" --> "0..1" recipe_model : составной ингредиент (полуфабрикат)
+    nomenclature_model "many" --> "1" nomenclature_group_model : входит в группу
+    nomenclature_model "many" --> "1" unit_model : единица номенклатуры
+    nomenclature_model --> nomenclature_type : тип
+    unit_model --> unit_model : базовая единица
 ```

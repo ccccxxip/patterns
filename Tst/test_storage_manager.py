@@ -64,7 +64,7 @@ def test_storage_manager_first_start_generates_data():
     assert set_mgr.settings.is_first_start is False
     
     # 2. Проверяем, что все стартовые данные правильные
-    assert len(st_mgr.units) == 5           # Грамм, Кг, Миллилитр, Литр, Штука  
-    assert len(st_mgr.groups) == 1          # Ингредиенты
-    assert len(st_mgr.warehouses) == 1      # Основной склад
-    assert len(st_mgr.nomenclatures) == 2   # Мука и Сахар
+    assert len(st_mgr.units) == 7          # Грамм, Кг, Миллилитр, Литр, Штука, Ст. ложка, Ч. ложка
+    assert len(st_mgr.groups) == 5         # Сырье, Готовая продукция, Полуфабрикаты, Упаковка и др.
+    assert len(st_mgr.warehouses) == 1     # Основной склад
+    assert len(st_mgr.nomenclatures) > 2   # Убеждаемся, что сгенерировано полноценное меню, а не 2 продукта
