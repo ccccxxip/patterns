@@ -1,6 +1,7 @@
 from Src.Core.base_model import base_model
 from Src.Models.organization_model import organization_model
 from Src.Core.validator import validator
+from Src.Dtos.report_type_dto import report_type_enum
 
 
 class settings_model(base_model):
@@ -14,6 +15,8 @@ class settings_model(base_model):
     __boss_name: str = ""
     __account_name: str = ""
     __is_first_start: bool = True
+    __response_format: report_type_enum = report_type_enum.TXT
+
 
     @property
     def organization(self) -> organization_model:
@@ -54,3 +57,14 @@ class settings_model(base_model):
     def is_first_start(self, value: bool) -> None:
         validator.validate(value, bool, field_name="is_first_start")
         self.__is_first_start = value
+
+    @property
+    def response_format(self) -> report_type_enum:
+        """Формат вывода отчётов по умолчанию"""
+        return self.__response_format
+
+    @response_format.setter
+    def response_format(self, value: report_type_enum) -> None:
+        """Задаёт формат вывода отчётов по умолчанию"""
+        validator.validate(value, report_type_enum, field_name="response_format")
+        self.__response_format = value
