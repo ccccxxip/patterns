@@ -28,6 +28,7 @@ class csv_report(abstract_report):
         return result
 
     def _build_recipe(self, recipe) -> str:
+        """Формирует CSV-таблицу ингредиентов рецепта с итогами"""
         output = io.StringIO()
         writer = csv.writer(output, delimiter=";")
         writer.writerow(["Код", "Наименование", "Брутто (г)", "Нетто (г)"])
@@ -39,6 +40,7 @@ class csv_report(abstract_report):
         return output.getvalue()
 
     def _build_nomenclature(self, nom) -> str:
+        """Формирует CSV-таблицу свойств номенклатуры"""
         output = io.StringIO()
         writer = csv.writer(output, delimiter=";")
         writer.writerow(["Поле", "Значение"])
@@ -51,6 +53,7 @@ class csv_report(abstract_report):
         return output.getvalue()
 
     def _build_unit(self, unit) -> str:
+        """Формирует CSV-таблицу свойств единицы измерения"""
         output = io.StringIO()
         writer = csv.writer(output, delimiter=";")
         writer.writerow(["Поле", "Значение"])
