@@ -6,9 +6,10 @@ from Src.Logics.markdown_report import markdown_report
 from Src.Logics.csv_report import csv_report
 from Src.Logics.xml_report import xml_report
 from Src.Logics.html_report import html_report
+from Src.Core.abstract_report_factory import abstract_factory
 
 
-class report_factory:
+class report_factory(abstract_factory):
     """
     Фабрика отчётов
     Инкапсулирует маппинг типов и настройки
