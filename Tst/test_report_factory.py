@@ -11,97 +11,97 @@ from Src.Core.exception import arguments_exception
 
 def test_factory_create_csv():
     """
-    Сценарий: создание отчёта по типу CSV через метод create фабрики
-    Ожидаемый результат: фабрика возвращает экземпляр класса csv_report
+    Сценарий: подбор класса отчёта по типу CSV через метод create фабрики
+    Ожидаемый результат: фабрика возвращает класс csv_report
     """
     # Подготовка
     factory = report_factory()
 
     # Действие
-    report = factory.create(report_type_enum.CSV)
+    report_cls = factory.create(report_type_enum.CSV)
 
     # Проверка
-    assert report is not None
-    assert isinstance(report, csv_report)
+    assert report_cls is not None
+    assert report_cls is csv_report
 
 
 def test_factory_create_markdown():
     """
-    Сценарий: создание отчёта по типу MARKDOWN через метод create фабрики
-    Ожидаемый результат: фабрика возвращает экземпляр класса markdown_report
+    Сценарий: подбор класса отчёта по типу MARKDOWN через метод create фабрики
+    Ожидаемый результат: фабрика возвращает класс markdown_report
     """
     # Подготовка
     factory = report_factory()
 
     # Действие
-    report = factory.create(report_type_enum.MARKDOWN)
+    report_cls = factory.create(report_type_enum.MARKDOWN)
 
     # Проверка
-    assert report is not None
-    assert isinstance(report, markdown_report)
+    assert report_cls is not None
+    assert report_cls is markdown_report
 
 
 def test_factory_create_xml():
     """
-    Сценарий: создание отчёта по типу XML через метод create фабрики
-    Ожидаемый результат: фабрика возвращает экземпляр класса xml_report
+    Сценарий: подбор класса отчёта по типу XML через метод create фабрики
+    Ожидаемый результат: фабрика возвращает класс xml_report
     """
     # Подготовка
     factory = report_factory()
 
     # Действие
-    report = factory.create(report_type_enum.XML)
+    report_cls = factory.create(report_type_enum.XML)
 
     # Проверка
-    assert report is not None
-    assert isinstance(report, xml_report)
+    assert report_cls is not None
+    assert report_cls is xml_report
 
 
 def test_factory_create_html():
     """
-    Сценарий: создание отчёта по типу HTML через метод create фабрики
-    Ожидаемый результат: фабрика возвращает экземпляр класса html_report
+    Сценарий: подбор класса отчёта по типу HTML через метод create фабрики
+    Ожидаемый результат: фабрика возвращает класс html_report
     """
     # Подготовка
     factory = report_factory()
 
     # Действие
-    report = factory.create(report_type_enum.HTML)
+    report_cls = factory.create(report_type_enum.HTML)
 
     # Проверка
-    assert report is not None
-    assert isinstance(report, html_report)
+    assert report_cls is not None
+    assert report_cls is html_report
 
 
 def test_factory_create_txt():
     """
-    Сценарий: создание отчёта по типу TXT через метод create фабрики
-    Ожидаемый результат: фабрика возвращает экземпляр класса text_report
+    Сценарий: подбор класса отчёта по типу TXT через метод create фабрики
+    Ожидаемый результат: фабрика возвращает класс text_report
     """
     # Подготовка
     factory = report_factory()
 
     # Действие
-    report = factory.create(report_type_enum.TXT)
+    report_cls = factory.create(report_type_enum.TXT)
 
     # Проверка
-    assert report is not None
-    assert isinstance(report, text_report)
+    assert report_cls is not None
+    assert report_cls is text_report
 
 
 def test_factory_create_default():
     """
-    Сценарий: создание отчёта по умолчанию методом create_default без указания типа
-    Ожидаемый результат: фабрика возвращает отчёт того формата, который задан в настройках
+    Сценарий: подбор класса отчёта по умолчанию методом create_default без указания типа
+    Ожидаемый результат: фабрика возвращает класс отчёта того формата, который задан в настройках
     """
     # Подготовка
     factory = report_factory()
 
     # Действие
-    report = factory.create_default()
+    report_cls = factory.create_default()
 
     # Проверка
-    assert report is not None
+    assert report_cls is not None
 
 
 def test_factory_create_invalid_raises():
@@ -121,3 +121,19 @@ def test_factory_create_invalid_raises():
 
     # Проверка
     assert is_exception is True
+
+
+def test_factory_create_returns_callable():
+    """
+    Сценарий: проверка что подобранный фабрикой класс можно инстанциировать
+    Ожидаемый результат: вызов класса с () создаёт экземпляр нужного отчёта
+    """
+    # Подготовка
+    factory = report_factory()
+
+    # Действие
+    report_cls = factory.create(report_type_enum.CSV)
+    report_obj = report_cls()
+
+    # Проверка
+    assert isinstance(report_obj, csv_report)
