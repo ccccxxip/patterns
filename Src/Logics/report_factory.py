@@ -13,9 +13,10 @@ class report_factory(abstract_factory):
     """
     Фабрика отчётов
     Инкапсулирует маппинг типов и настройки
-    Создаёт нужный отчёт по указанному типу или по формату из настроек
+    Подбирает нужный класс отчёта по указанному типу или по формату из настроек
     """
 
+    """словарь соответствия: enum-тип -> класс отчёта"""
     __mapping: dict = {
         report_type_enum.TXT:      text_report,
         report_type_enum.CSV:      csv_report,
@@ -32,15 +33,15 @@ class report_factory(abstract_factory):
             self.__settings_manager.load()
 
     def create(self, report_type: report_type_enum) -> abstract_report:
-        """Создаёт отчёт указанного типа"""
+        """Подбирает класс отчёта по указанному типу"""
         if report_type not in self.__mapping:
             raise arguments_exception(
                 "report_type",
                 f"Указанный тип отчёта '{report_type}' не поддерживается"
             )
-        return self.__mapping[report_type]()
+        return self.__mapping[report_type]
 
     def create_default(self) -> abstract_report:
-        """Создаёт отчёт в формате по умолчанию из настроек (response_format)"""
+        """Подбирает класс отчёта в формате по умолчанию из настроек (response_format)"""
         default_format = self.__settings_manager.settings.response_format
         return self.create(default_format)
