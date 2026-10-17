@@ -80,7 +80,8 @@ def report():
 
     # Формируем отчёт
     factory = report_factory()
-    report_obj = factory.create(report_type)
+    report_cls = factory.create(report_type)
+    report_obj = report_cls()
     result = report_obj.build(entity)
 
     # CSV и Markdown — бинарное скачивание файла
@@ -118,11 +119,11 @@ def report_default():
         return flask.jsonify({"error": f"Сущность типа '{entity_type}' с id '{entity_id}' не найдена"}), 404
 
     factory = report_factory()
-    report_obj = factory.create_default()
+    report_cls = factory.create_default()
+    report_obj = report_cls()
     result = report_obj.build(entity)
 
     # Определяем формат из настроек
-    default_format = factory.create_default().__class__.__name__
     mgr = settings_manager()
     current_format = mgr.settings.response_format
 
