@@ -42,6 +42,7 @@ class html_report(abstract_report):
         )
 
     def _build_recipe(self, recipe) -> str:
+        """Формирует HTML-разметку карточки рецепта с таблицей ингредиентов"""
         rows = ""
         for ing in recipe.ingredients:
             rows += (
@@ -63,6 +64,7 @@ class html_report(abstract_report):
         )
 
     def _build_nomenclature(self, nom) -> str:
+        """Формирует HTML-разметку карточки номенклатуры"""
         return (
             f"<h1>Номенклатура: {nom.name}</h1>\n"
             f"<div class='meta'><b>Код:</b> {nom.id}</div>\n"
@@ -73,6 +75,7 @@ class html_report(abstract_report):
         )
 
     def _build_unit(self, unit) -> str:
+        """Формирует HTML-разметку карточки единицы измерения"""
         base_name = unit.base_unit.name if unit.base_unit is not unit else "базовая"
         return (
             f"<h1>Единица измерения: {unit.name}</h1>\n"

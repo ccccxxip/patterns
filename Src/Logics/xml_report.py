@@ -37,6 +37,7 @@ class xml_report(abstract_report):
         )
 
     def _build_recipe(self, recipe) -> str:
+        """Формирует текст XML-отчёта для рецепта (технологической карты)"""
         root = ET.Element("recipe")
         ET.SubElement(root, "id").text = recipe.id
         ET.SubElement(root, "name").text = recipe.name
@@ -58,6 +59,7 @@ class xml_report(abstract_report):
         return self._to_string(root)
 
     def _build_nomenclature(self, nom) -> str:
+        """Формирует текст XML-отчёта для номенклатуры"""
         root = ET.Element("nomenclature")
         ET.SubElement(root, "id").text = nom.id
         ET.SubElement(root, "name").text = nom.name
@@ -68,6 +70,7 @@ class xml_report(abstract_report):
         return self._to_string(root)
 
     def _build_unit(self, unit) -> str:
+        """Формирует текст XML-отчёта для единицы измерения"""
         root = ET.Element("unit")
         ET.SubElement(root, "id").text = unit.id
         ET.SubElement(root, "name").text = unit.name
