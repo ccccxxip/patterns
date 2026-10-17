@@ -17,7 +17,6 @@ class report_result_dto(base_model):
     def text(self) -> str:
         return self.__text
 
-
     @property
     def binary(self) -> list:
         return self.__binary 
