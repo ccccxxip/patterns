@@ -26,6 +26,7 @@ class text_report(abstract_report):
         return result
 
     def _build_recipe(self, recipe) -> str:
+        """Формирует текст отчёта для рецепта (технологической карты)"""
         lines = [
             f"Технологическая карта: {recipe.name}",
             f"Код: {recipe.id}",
@@ -44,6 +45,7 @@ class text_report(abstract_report):
         return "\n".join(lines)
 
     def _build_nomenclature(self, nom) -> str:
+        """Формирует текст отчёта для номенклатуры"""
         return (
             f"Номенклатура: {nom.name}\n"
             f"Код: {nom.id}\n"
@@ -54,6 +56,7 @@ class text_report(abstract_report):
         )
 
     def _build_unit(self, unit) -> str:
+        """Формирует текст отчёта для единицы измерения"""
         base_name = unit.base_unit.name if unit.base_unit is not unit else "базовая"
         return (
             f"Единица измерения: {unit.name}\n"
