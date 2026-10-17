@@ -26,6 +26,7 @@ class markdown_report(abstract_report):
         return result
 
     def _build_recipe(self, recipe) -> str:
+        """Формирует текст Markdown-отчёта для рецепта (технологической карты)"""
         lines = [
             f"# Технологическая карта: {recipe.name}",
             "",
@@ -51,6 +52,7 @@ class markdown_report(abstract_report):
         return "\n".join(lines)
 
     def _build_nomenclature(self, nom) -> str:
+        """Формирует текст Markdown-отчёта для номенклатуры"""
         lines = [
             f"# Номенклатура: {nom.name}",
             "",
@@ -63,6 +65,7 @@ class markdown_report(abstract_report):
         return "\n".join(lines)
 
     def _build_unit(self, unit) -> str:
+        """Формирует текст Markdown-отчёта для единицы измерения"""
         base_name = unit.base_unit.name if unit.base_unit is not unit else "базовая"
         lines = [
             f"# Единица измерения: {unit.name}",
