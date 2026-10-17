@@ -8,5 +8,6 @@
     },
     "is_first_start": true,
     "boss_name": "Иванов И.И.",
-    "account_name": "Основной расчетный счет"
+    "account_name": "Основной расчетный счет",
+    "response_format": "MARKDOWN"
 }
