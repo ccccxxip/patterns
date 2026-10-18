@@ -22,20 +22,6 @@ class html_report(abstract_report):
         """Флаг скачивания вложения"""
         return False
 
-    __field_titles = {
-        "id": "Код",
-        "name": "Наименование",
-        "full_name": "Полное наименование",
-        "group": "Группа",
-        "unit": "Единица измерения",
-        "type": "Тип",
-        "ratio": "Коэффициент",
-        "base_unit": "Базовая единица",
-        "owner": "Блюдо",
-        "portions": "Порций",
-        "preparation_method": "Способ приготовления",
-    }
-
     __entity_titles = {
         "recipe_model": "Технологическая карта",
         "nomenclature_model": "Номенклатура",
@@ -59,48 +45,43 @@ class html_report(abstract_report):
         )
 
     def build(self, source: base_model) -> report_result_dto:
-        """Формирует HTML-отчёт для переданной сущности на основе рефлексии"""
+        """Формирует HTML-отчёт для любой сущности полностью на основе рефлексии"""
         scalar_fields = common.get_fields(source, is_common=True)
         all_fields = common.get_fields(source, is_common=False)
         list_fields = [f for f in all_fields if f not in scalar_fields]
 
         entity_title = self.__entity_titles.get(source.__class__.__name__, "Отчёт")
 
+        # Универсальный вывод метаданных сущности через рефлексию
+        meta_divs = ""
+        for field in scalar_fields:
+            if field == "name":
+                continue
+            title = common.get_field_title(source, field)
+            val_str = self._format_value(getattr(source, field), source)
+            meta_divs += f"<div class='meta'><b>{title}:</b> {val_str}</div>\n"
+
+        body = f"<h1>{entity_title}: {source.name}</h1>\n{meta_divs}"
+
+        # Если сущность составная (содержит списки / табличные части)
         if list_fields:
-            # Сущность с табличной частью (рецепт)
-            rows = ""
-            items = getattr(source, list_fields[0], [])
-            for ing in items:
-                rows += (
-                    f"  <tr><td>{ing.id}</td><td>{ing.name}</td>"
-                    f"<td>{ing.gross_weight:.2f}</td><td>{ing.net_weight:.2f}</td></tr>\n"
-                )
-
-            body = (
-                f"<h1>{source.name}</h1>\n"
-                f"<div class='meta'><b>Код:</b> {source.id}</div>\n"
-                f"<div class='meta'><b>Блюдо:</b> {getattr(source.owner, 'name', source.name)}</div>\n"
-                f"<div class='meta'><b>Порций:</b> {getattr(source, 'portions', '')}</div>\n"
-                f"<div class='meta'><b>Способ приготовления:</b> {getattr(source, 'preparation_method', None) or '—'}</div>\n"
-                f"<h2>Состав</h2>\n"
-                f"<table>\n"
-                f"  <tr><th>Код</th><th>Наименование</th><th>Брутто (г)</th><th>Нетто (г)</th></tr>\n"
-                f"{rows}</table>\n"
-            )
-            if hasattr(source, "total_gross_weight") and hasattr(source, "total_net_weight"):
+            for list_field in list_fields:
+                items = getattr(source, list_field, [])
+                if not items:
+                    continue
+                list_title = common.get_field_title(source, list_field)
+                rows = ""
+                for item in items:
+                    rows += (
+                        f"  <tr><td>{item.id}</td><td>{item.name}</td>"
+                        f"<td>{getattr(item, 'gross_weight', 0):.2f}</td><td>{getattr(item, 'net_weight', 0):.2f}</td></tr>\n"
+                    )
                 body += (
-                    f"<p><b>Итого Брутто:</b> {source.total_gross_weight:.2f} г | "
-                    f"<b>Итого Нетто:</b> {source.total_net_weight:.2f} г</p>\n"
+                    f"<h2>{list_title}</h2>\n"
+                    f"<table>\n"
+                    f"  <tr><th>Код</th><th>Наименование</th><th>Брутто (г)</th><th>Нетто (г)</th></tr>\n"
+                    f"{rows}</table>\n"
                 )
-        else:
-            # Одиночная сущность
-            meta_divs = ""
-            for field in scalar_fields:
-                title = self.__field_titles.get(field, field)
-                val_str = self._format_value(getattr(source, field), source)
-                meta_divs += f"<div class='meta'><b>{title}:</b> {val_str}</div>\n"
-
-            body = f"<h1>{entity_title}: {source.name}</h1>\n{meta_divs}"
 
         result = report_result_dto()
         result.text = self._wrap(body)

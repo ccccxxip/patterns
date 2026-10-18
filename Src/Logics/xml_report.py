@@ -31,7 +31,7 @@ class xml_report(abstract_report):
         )
 
     def build(self, source: base_model) -> report_result_dto:
-        """Формирует XML-отчёт для переданной сущности на основе рефлексии"""
+        """Формирует XML-отчёт для любой сущности полностью на основе рефлексии"""
         scalar_fields = common.get_fields(source, is_common=True)
         all_fields = common.get_fields(source, is_common=False)
         list_fields = [f for f in all_fields if f not in scalar_fields]
@@ -39,33 +39,32 @@ class xml_report(abstract_report):
         root_tag = source.__class__.__name__.replace("_model", "")
         root = ET.Element(root_tag)
 
-        if list_fields:
-            # Сущность с табличной частью (рецепт)
-            ET.SubElement(root, "id").text = source.id
-            ET.SubElement(root, "name").text = source.name
-            ET.SubElement(root, "owner").text = getattr(source.owner, "name", source.name)
-            ET.SubElement(root, "portions").text = str(getattr(source, "portions", ""))
-            ET.SubElement(root, "preparation_method").text = getattr(source, "preparation_method", None) or ""
+        # Вывод всех скалярных полей сущности через рефлексию
+        for field in scalar_fields:
+            if field in ("total_gross_weight", "total_net_weight"):
+                continue
+            val = getattr(source, field)
+            val_str = self._format_value(val, source)
+            ET.SubElement(root, field).text = val_str
 
-            ingredients_el = ET.SubElement(root, "ingredients")
-            items = getattr(source, list_fields[0], [])
-            for ing in items:
-                ing_el = ET.SubElement(ingredients_el, "ingredient")
-                ET.SubElement(ing_el, "id").text = ing.id
-                ET.SubElement(ing_el, "name").text = ing.name
-                ET.SubElement(ing_el, "gross_weight").text = f"{ing.gross_weight:.2f}"
-                ET.SubElement(ing_el, "net_weight").text = f"{ing.net_weight:.2f}"
+        # Если сущность составная (табличная часть)
+        if list_fields:
+            for list_field in list_fields:
+                items = getattr(source, list_field, [])
+                items_el = ET.SubElement(root, list_field)
+                for item in items:
+                    item_el = ET.SubElement(items_el, "ingredient")
+                    ET.SubElement(item_el, "id").text = item.id
+                    ET.SubElement(item_el, "name").text = item.name
+                    if hasattr(item, "gross_weight"):
+                        ET.SubElement(item_el, "gross_weight").text = f"{item.gross_weight:.2f}"
+                    if hasattr(item, "net_weight"):
+                        ET.SubElement(item_el, "net_weight").text = f"{item.net_weight:.2f}"
 
             if hasattr(source, "total_gross_weight") and hasattr(source, "total_net_weight"):
                 totals = ET.SubElement(root, "totals")
                 ET.SubElement(totals, "total_gross").text = f"{source.total_gross_weight:.2f}"
                 ET.SubElement(totals, "total_net").text = f"{source.total_net_weight:.2f}"
-        else:
-            # Одиночная сущность: заполняем все поля через рефлексию
-            for field in scalar_fields:
-                val = getattr(source, field)
-                val_str = self._format_value(val, source)
-                ET.SubElement(root, field).text = val_str
 
         result = report_result_dto()
         result.text = self._to_string(root)

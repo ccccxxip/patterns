@@ -107,3 +107,18 @@ def test_abstract_factory_declares_create_default():
     """
     # Подготовка и Проверка
     assert hasattr(abstract_factory, "create_default")
+
+def test_common_get_field_title_from_docstrings():
+    """
+    Сценарий: извлечение названий полей из docstrings свойств через рефлексию
+    Ожидаемый результат: метод common.get_field_title возвращает корректные наименования из @property.__doc__
+    """
+    # Действие и Проверка: извлечение наименований из docstrings
+    assert common.get_field_title(nomenclature_model, "name") == "Наименование"
+    assert common.get_field_title(nomenclature_model, "id") == "Код"
+    assert common.get_field_title(nomenclature_model, "full_name") == "Полное наименование"
+    assert common.get_field_title(recipe_model, "portions") == "Порций"
+    assert common.get_field_title(recipe_model, "total_gross_weight") == "Итого Брутто"
+    # Для неизвестного поля возвращается отформатированное имя
+    assert common.get_field_title(nomenclature_model, "unknown_field") == "Unknown field"
+
