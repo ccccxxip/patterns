@@ -2,32 +2,26 @@ import xml.etree.ElementTree as ET
 from Src.Core.abstract_report import abstract_report
 from Src.Dtos.report_result_dto import report_result_dto
 from Src.Core.base_model import base_model
+from Src.Core.common import common
 
 
 class xml_report(abstract_report):
     """Формирует отчёт в формате XML (текстовое представление)"""
 
-    def build(self, source: base_model) -> report_result_dto:
-        """Формирует XML-отчёт для переданной сущности"""
-        from Src.Models.recipe_model import recipe_model
-        from Src.Models.nomenclature_model import nomenclature_model
-        from Src.Models.unit_model import unit_model
+    @property
+    def mime_type(self) -> str:
+        """MIME-тип содержимого отчёта"""
+        return "application/xml"
 
-        if isinstance(source, recipe_model):
-            xml_str = self._build_recipe(source)
-        elif isinstance(source, nomenclature_model):
-            xml_str = self._build_nomenclature(source)
-        elif isinstance(source, unit_model):
-            xml_str = self._build_unit(source)
-        else:
-            root = ET.Element("entity")
-            ET.SubElement(root, "id").text = source.id
-            ET.SubElement(root, "name").text = source.name
-            xml_str = self._to_string(root)
+    @property
+    def file_extension(self) -> str:
+        """Расширение файла отчёта"""
+        return "xml"
 
-        result = report_result_dto()
-        result.text = xml_str
-        return result
+    @property
+    def is_attachment(self) -> bool:
+        """Флаг скачивания вложения"""
+        return False
 
     def _to_string(self, root: ET.Element) -> str:
         """Преобразует XML-дерево в строку с отступами и заголовком"""
@@ -36,45 +30,43 @@ class xml_report(abstract_report):
             root, encoding="unicode", xml_declaration=False
         )
 
-    def _build_recipe(self, recipe) -> str:
-        """Формирует текст XML-отчёта для рецепта (технологической карты)"""
-        root = ET.Element("recipe")
-        ET.SubElement(root, "id").text = recipe.id
-        ET.SubElement(root, "name").text = recipe.name
-        ET.SubElement(root, "owner").text = recipe.owner.name
-        ET.SubElement(root, "portions").text = str(recipe.portions)
-        ET.SubElement(root, "preparation_method").text = recipe.preparation_method or ""
+    def build(self, source: base_model) -> report_result_dto:
+        """Формирует XML-отчёт для переданной сущности на основе рефлексии"""
+        scalar_fields = common.get_fields(source, is_common=True)
+        all_fields = common.get_fields(source, is_common=False)
+        list_fields = [f for f in all_fields if f not in scalar_fields]
 
-        ingredients_el = ET.SubElement(root, "ingredients")
-        for ing in recipe.ingredients:
-            ing_el = ET.SubElement(ingredients_el, "ingredient")
-            ET.SubElement(ing_el, "id").text = ing.id
-            ET.SubElement(ing_el, "name").text = ing.name
-            ET.SubElement(ing_el, "gross_weight").text = f"{ing.gross_weight:.2f}"
-            ET.SubElement(ing_el, "net_weight").text = f"{ing.net_weight:.2f}"
+        root_tag = source.__class__.__name__.replace("_model", "")
+        root = ET.Element(root_tag)
 
-        totals = ET.SubElement(root, "totals")
-        ET.SubElement(totals, "total_gross").text = f"{recipe.total_gross_weight:.2f}"
-        ET.SubElement(totals, "total_net").text = f"{recipe.total_net_weight:.2f}"
-        return self._to_string(root)
+        if list_fields:
+            # Сущность с табличной частью (рецепт)
+            ET.SubElement(root, "id").text = source.id
+            ET.SubElement(root, "name").text = source.name
+            ET.SubElement(root, "owner").text = getattr(source.owner, "name", source.name)
+            ET.SubElement(root, "portions").text = str(getattr(source, "portions", ""))
+            ET.SubElement(root, "preparation_method").text = getattr(source, "preparation_method", None) or ""
 
-    def _build_nomenclature(self, nom) -> str:
-        """Формирует текст XML-отчёта для номенклатуры"""
-        root = ET.Element("nomenclature")
-        ET.SubElement(root, "id").text = nom.id
-        ET.SubElement(root, "name").text = nom.name
-        ET.SubElement(root, "full_name").text = nom.full_name
-        ET.SubElement(root, "group").text = nom.group.name
-        ET.SubElement(root, "unit").text = nom.unit.name
-        ET.SubElement(root, "type").text = nom.type.name
-        return self._to_string(root)
+            ingredients_el = ET.SubElement(root, "ingredients")
+            items = getattr(source, list_fields[0], [])
+            for ing in items:
+                ing_el = ET.SubElement(ingredients_el, "ingredient")
+                ET.SubElement(ing_el, "id").text = ing.id
+                ET.SubElement(ing_el, "name").text = ing.name
+                ET.SubElement(ing_el, "gross_weight").text = f"{ing.gross_weight:.2f}"
+                ET.SubElement(ing_el, "net_weight").text = f"{ing.net_weight:.2f}"
 
-    def _build_unit(self, unit) -> str:
-        """Формирует текст XML-отчёта для единицы измерения"""
-        root = ET.Element("unit")
-        ET.SubElement(root, "id").text = unit.id
-        ET.SubElement(root, "name").text = unit.name
-        ET.SubElement(root, "ratio").text = str(unit.ratio)
-        base_name = unit.base_unit.name if unit.base_unit is not unit else "базовая"
-        ET.SubElement(root, "base_unit").text = base_name
-        return self._to_string(root)
+            if hasattr(source, "total_gross_weight") and hasattr(source, "total_net_weight"):
+                totals = ET.SubElement(root, "totals")
+                ET.SubElement(totals, "total_gross").text = f"{source.total_gross_weight:.2f}"
+                ET.SubElement(totals, "total_net").text = f"{source.total_net_weight:.2f}"
+        else:
+            # Одиночная сущность: заполняем все поля через рефлексию
+            for field in scalar_fields:
+                val = getattr(source, field)
+                val_str = self._format_value(val, source)
+                ET.SubElement(root, field).text = val_str
+
+        result = report_result_dto()
+        result.text = self._to_string(root)
+        return result

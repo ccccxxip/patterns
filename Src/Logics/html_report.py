@@ -1,29 +1,46 @@
 from Src.Core.abstract_report import abstract_report
 from Src.Dtos.report_result_dto import report_result_dto
 from Src.Core.base_model import base_model
+from Src.Core.common import common
 
 
 class html_report(abstract_report):
     """Формирует отчёт в формате HTML (текстовое представление)"""
 
-    def build(self, source: base_model) -> report_result_dto:
-        """Формирует HTML-отчёт для переданной сущности"""
-        from Src.Models.recipe_model import recipe_model
-        from Src.Models.nomenclature_model import nomenclature_model
-        from Src.Models.unit_model import unit_model
+    @property
+    def mime_type(self) -> str:
+        """MIME-тип содержимого отчёта"""
+        return "text/html"
 
-        if isinstance(source, recipe_model):
-            body = self._build_recipe(source)
-        elif isinstance(source, nomenclature_model):
-            body = self._build_nomenclature(source)
-        elif isinstance(source, unit_model):
-            body = self._build_unit(source)
-        else:
-            body = f"<p><b>ID:</b> {source.id}</p><p><b>Наименование:</b> {source.name}</p>"
+    @property
+    def file_extension(self) -> str:
+        """Расширение файла отчёта"""
+        return "html"
 
-        result = report_result_dto()
-        result.text = self._wrap(body)
-        return result
+    @property
+    def is_attachment(self) -> bool:
+        """Флаг скачивания вложения"""
+        return False
+
+    __field_titles = {
+        "id": "Код",
+        "name": "Наименование",
+        "full_name": "Полное наименование",
+        "group": "Группа",
+        "unit": "Единица измерения",
+        "type": "Тип",
+        "ratio": "Коэффициент",
+        "base_unit": "Базовая единица",
+        "owner": "Блюдо",
+        "portions": "Порций",
+        "preparation_method": "Способ приготовления",
+    }
+
+    __entity_titles = {
+        "recipe_model": "Технологическая карта",
+        "nomenclature_model": "Номенклатура",
+        "unit_model": "Единица измерения",
+    }
 
     def _wrap(self, body: str) -> str:
         """Оборачивает содержимое в полный HTML-документ со стилями"""
@@ -41,45 +58,50 @@ class html_report(abstract_report):
             f'</head>\n<body>\n{body}\n</body>\n</html>'
         )
 
-    def _build_recipe(self, recipe) -> str:
-        """Формирует HTML-разметку карточки рецепта с таблицей ингредиентов"""
-        rows = ""
-        for ing in recipe.ingredients:
-            rows += (
-                f"  <tr><td>{ing.id}</td><td>{ing.name}</td>"
-                f"<td>{ing.gross_weight:.2f}</td><td>{ing.net_weight:.2f}</td></tr>\n"
+    def build(self, source: base_model) -> report_result_dto:
+        """Формирует HTML-отчёт для переданной сущности на основе рефлексии"""
+        scalar_fields = common.get_fields(source, is_common=True)
+        all_fields = common.get_fields(source, is_common=False)
+        list_fields = [f for f in all_fields if f not in scalar_fields]
+
+        entity_title = self.__entity_titles.get(source.__class__.__name__, "Отчёт")
+
+        if list_fields:
+            # Сущность с табличной частью (рецепт)
+            rows = ""
+            items = getattr(source, list_fields[0], [])
+            for ing in items:
+                rows += (
+                    f"  <tr><td>{ing.id}</td><td>{ing.name}</td>"
+                    f"<td>{ing.gross_weight:.2f}</td><td>{ing.net_weight:.2f}</td></tr>\n"
+                )
+
+            body = (
+                f"<h1>{source.name}</h1>\n"
+                f"<div class='meta'><b>Код:</b> {source.id}</div>\n"
+                f"<div class='meta'><b>Блюдо:</b> {getattr(source.owner, 'name', source.name)}</div>\n"
+                f"<div class='meta'><b>Порций:</b> {getattr(source, 'portions', '')}</div>\n"
+                f"<div class='meta'><b>Способ приготовления:</b> {getattr(source, 'preparation_method', None) or '—'}</div>\n"
+                f"<h2>Состав</h2>\n"
+                f"<table>\n"
+                f"  <tr><th>Код</th><th>Наименование</th><th>Брутто (г)</th><th>Нетто (г)</th></tr>\n"
+                f"{rows}</table>\n"
             )
-        return (
-            f"<h1>{recipe.name}</h1>\n"
-            f"<div class='meta'><b>Код:</b> {recipe.id}</div>\n"
-            f"<div class='meta'><b>Блюдо:</b> {recipe.owner.name}</div>\n"
-            f"<div class='meta'><b>Порций:</b> {recipe.portions}</div>\n"
-            f"<div class='meta'><b>Способ приготовления:</b> {recipe.preparation_method or '—'}</div>\n"
-            f"<h2>Состав</h2>\n"
-            f"<table>\n"
-            f"  <tr><th>Код</th><th>Наименование</th><th>Брутто (г)</th><th>Нетто (г)</th></tr>\n"
-            f"{rows}</table>\n"
-            f"<p><b>Итого Брутто:</b> {recipe.total_gross_weight:.2f} г | "
-            f"<b>Итого Нетто:</b> {recipe.total_net_weight:.2f} г</p>\n"
-        )
+            if hasattr(source, "total_gross_weight") and hasattr(source, "total_net_weight"):
+                body += (
+                    f"<p><b>Итого Брутто:</b> {source.total_gross_weight:.2f} г | "
+                    f"<b>Итого Нетто:</b> {source.total_net_weight:.2f} г</p>\n"
+                )
+        else:
+            # Одиночная сущность
+            meta_divs = ""
+            for field in scalar_fields:
+                title = self.__field_titles.get(field, field)
+                val_str = self._format_value(getattr(source, field), source)
+                meta_divs += f"<div class='meta'><b>{title}:</b> {val_str}</div>\n"
 
-    def _build_nomenclature(self, nom) -> str:
-        """Формирует HTML-разметку карточки номенклатуры"""
-        return (
-            f"<h1>Номенклатура: {nom.name}</h1>\n"
-            f"<div class='meta'><b>Код:</b> {nom.id}</div>\n"
-            f"<div class='meta'><b>Полное наименование:</b> {nom.full_name}</div>\n"
-            f"<div class='meta'><b>Группа:</b> {nom.group.name}</div>\n"
-            f"<div class='meta'><b>Единица измерения:</b> {nom.unit.name}</div>\n"
-            f"<div class='meta'><b>Тип:</b> {nom.type.name}</div>\n"
-        )
+            body = f"<h1>{entity_title}: {source.name}</h1>\n{meta_divs}"
 
-    def _build_unit(self, unit) -> str:
-        """Формирует HTML-разметку карточки единицы измерения"""
-        base_name = unit.base_unit.name if unit.base_unit is not unit else "базовая"
-        return (
-            f"<h1>Единица измерения: {unit.name}</h1>\n"
-            f"<div class='meta'><b>Код:</b> {unit.id}</div>\n"
-            f"<div class='meta'><b>Коэффициент:</b> {unit.ratio}</div>\n"
-            f"<div class='meta'><b>Базовая единица:</b> {base_name}</div>\n"
-        )
+        result = report_result_dto()
+        result.text = self._wrap(body)
+        return result
