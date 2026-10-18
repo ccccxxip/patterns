@@ -30,29 +30,6 @@ def get_report():
     return "success"
 
 
-def _find_entity(entity_type: str, entity_id: str):
-    """Ищет сущность в хранилище по типу и коду"""
-    store = storage_manager()
-    if not store.is_loaded:
-        store.load()
-
-    type_map = {
-        "nomenclature": store.nomenclatures,
-        "unit": store.units,
-        "recipe": store.recipes,
-    }
-
-    items = type_map.get(entity_type)
-    if items is None:
-        return None
-
-    for item in items:
-        owner_name = getattr(item, "owner", None) and item.owner.name
-        if item.id == entity_id or item.name == entity_id or owner_name == entity_id:
-            return item
-    return None
-
-
 def _build_response(report_obj, result):
     """Универсальное формирование HTTP-ответа на основе метаданных отчёта"""
     headers = {}
@@ -84,7 +61,8 @@ def report():
         valid = [e.name for e in report_type_enum]
         return flask.jsonify({"error": f"Неизвестный формат '{fmt}'. Допустимые: {valid}"}), 400
 
-    entity = _find_entity(entity_type, entity_id)
+    store = storage_manager()
+    entity = store.get_entity(entity_type, entity_id)
     if entity is None:
         return flask.jsonify({"error": f"Сущность типа '{entity_type}' с id '{entity_id}' не найдена"}), 404
 
@@ -108,7 +86,8 @@ def report_default():
     if not entity_type or not entity_id:
         return flask.jsonify({"error": "Необходимы параметры: type, id"}), 400
 
-    entity = _find_entity(entity_type, entity_id)
+    store = storage_manager()
+    entity = store.get_entity(entity_type, entity_id)
     if entity is None:
         return flask.jsonify({"error": f"Сущность типа '{entity_type}' с id '{entity_id}' не найдена"}), 404
 
