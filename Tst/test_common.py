@@ -1,0 +1,109 @@
+import pytest
+from Src.Core.common import common
+from Src.Core.exception import arguments_exception
+from Src.Models.unit_model import unit_model
+from Src.Models.nomenclature_model import nomenclature_model
+from Src.Models.nomenclature_group_model import nomenclature_group_model
+from Src.Models.recipe_model import recipe_model
+from Src.Models.ingredient_model import ingredient_model
+from Src.Logics.csv_report import csv_report
+from Src.Logics.markdown_report import markdown_report
+from Src.Logics.html_report import html_report
+from Src.Logics.xml_report import xml_report
+from Src.Logics.text_report import text_report
+from Src.Core.abstract_report_factory import abstract_factory
+
+
+def test_common_get_fields_none_raises():
+    """
+    Сценарий: передача пустого значения (None) в метод get_fields модуля common
+    Ожидаемый результат: выбрасывается исключение arguments_exception
+    """
+    # Подготовка
+    is_exception = False
+
+    # Действие
+    try:
+        common.get_fields(None)
+    except arguments_exception:
+        is_exception = True
+
+    # Проверка
+    assert is_exception is True
+
+
+def test_common_get_fields_nomenclature():
+    """
+    Сценарий: получение списка публичных свойств номенклатуры через рефлексию
+    Ожидаемый результат: список содержит все свойства модели и не содержит приватных атрибутов
+    """
+    # Подготовка
+    g = unit_model.create_gram()
+    raw = nomenclature_group_model.create_raw()
+    nom = nomenclature_model.create_product("Сахар", "Сахар-песок", raw, g)
+
+    # Действие
+    fields = common.get_fields(nom)
+
+    # Проверка
+    assert "id" in fields
+    assert "name" in fields
+    assert "full_name" in fields
+    assert "group" in fields
+    assert "unit" in fields
+    assert "type" in fields
+    assert not any(f.startswith("_") for f in fields)
+
+
+def test_common_get_fields_recipe_filter_lists():
+    """
+    Сценарий: фильтрация коллекций и списков флагом is_common=True для сложной модели
+    Ожидаемый результат: при is_common=True списки исключаются, при is_common=False присутствуют
+    """
+    # Подготовка
+    g = unit_model.create_gram()
+    raw = nomenclature_group_model.create_raw()
+    dish = nomenclature_model.create_product("Блинчики", "Блинчики", raw, g)
+    flour = nomenclature_model.create_product("Мука", "Мука пшеничная", raw, g)
+    recipe = recipe_model("Блинчики", dish, portions=2)
+    recipe.add_ingredient(ingredient_model(flour, 140.0, 150.0, g))
+
+    # Действие
+    scalar_fields = common.get_fields(recipe, is_common=True)
+    all_fields = common.get_fields(recipe, is_common=False)
+
+    # Проверка
+    assert "ingredients" not in scalar_fields
+    assert "ingredients" in all_fields
+    assert "name" in scalar_fields
+    assert "id" in scalar_fields
+
+
+def test_reports_metadata():
+    """
+    Сценарий: проверка метаданных отчётов на соответствие принципам SOLID
+    Ожидаемый результат: каждый класс отчёта декларирует валидные mime_type, file_extension и флаг is_attachment
+    """
+    # Подготовка
+    reports = [
+        (csv_report(), "text/csv", "csv", True),
+        (markdown_report(), "text/markdown", "md", True),
+        (html_report(), "text/html", "html", False),
+        (xml_report(), "application/xml", "xml", False),
+        (text_report(), "text/plain", "txt", False),
+    ]
+
+    # Действие и Проверка
+    for report, expected_mime, expected_ext, expected_attach in reports:
+        assert report.mime_type == expected_mime
+        assert report.file_extension == expected_ext
+        assert report.is_attachment == expected_attach
+
+
+def test_abstract_factory_declares_create_default():
+    """
+    Сценарий: проверка объявления метода create_default в абстрактном интерфейсе
+    Ожидаемый результат: класс abstract_factory содержит объявление абстрактного метода create_default
+    """
+    # Подготовка и Проверка
+    assert hasattr(abstract_factory, "create_default")
