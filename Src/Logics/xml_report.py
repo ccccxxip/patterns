@@ -3,10 +3,16 @@ from Src.Core.abstract_report import abstract_report
 from Src.Dtos.report_result_dto import report_result_dto
 from Src.Core.base_model import base_model
 from Src.Core.common import common
+from Src.Models.recipe_model import recipe_model
 
 
 class xml_report(abstract_report):
     """Формирует отчёт в формате XML (текстовое представление)"""
+
+    def __init__(self):
+        super().__init__()
+        # Связка конкретного составного типа с внутренним методом
+        self.register(recipe_model, self._build_recipe)
 
     @property
     def mime_type(self) -> str:
@@ -30,41 +36,41 @@ class xml_report(abstract_report):
             root, encoding="unicode", xml_declaration=False
         )
 
-    def build(self, source: base_model) -> report_result_dto:
-        """Формирует XML-отчёт для любой сущности полностью на основе рефлексии"""
-        scalar_fields = common.get_fields(source, is_common=True)
-        all_fields = common.get_fields(source, is_common=False)
-        list_fields = [f for f in all_fields if f not in scalar_fields]
+    def _build_recipe(self, recipe: recipe_model) -> report_result_dto:
+        """Специализированный построитель XML для технологической карты"""
+        root = ET.Element("recipe")
+        ET.SubElement(root, "id").text = recipe.id
+        ET.SubElement(root, "name").text = recipe.name
+        ET.SubElement(root, "owner").text = recipe.owner.name
+        ET.SubElement(root, "portions").text = str(recipe.portions)
+        ET.SubElement(root, "preparation_method").text = recipe.preparation_method or ""
 
+        ingredients_el = ET.SubElement(root, "ingredients")
+        for ing in recipe.ingredients:
+            ing_el = ET.SubElement(ingredients_el, "ingredient")
+            ET.SubElement(ing_el, "id").text = ing.id
+            ET.SubElement(ing_el, "name").text = ing.name
+            ET.SubElement(ing_el, "gross_weight").text = f"{ing.gross_weight:.2f}"
+            ET.SubElement(ing_el, "net_weight").text = f"{ing.net_weight:.2f}"
+
+        totals = ET.SubElement(root, "totals")
+        ET.SubElement(totals, "total_gross").text = f"{recipe.total_gross_weight:.2f}"
+        ET.SubElement(totals, "total_net").text = f"{recipe.total_net_weight:.2f}"
+
+        result = report_result_dto()
+        result.text = self._to_string(root)
+        return result
+
+    def _build_generic(self, source: base_model) -> report_result_dto:
+        """Универсальный построитель XML для любой сущности на основе рефлексии"""
         root_tag = source.__class__.__name__.replace("_model", "")
         root = ET.Element(root_tag)
 
-        # Вывод всех скалярных полей сущности через рефлексию
+        scalar_fields = common.get_fields(source, is_common=True)
         for field in scalar_fields:
-            if field in ("total_gross_weight", "total_net_weight"):
-                continue
             val = getattr(source, field)
             val_str = self._format_value(val, source)
             ET.SubElement(root, field).text = val_str
-
-        # Если сущность составная (табличная часть)
-        if list_fields:
-            for list_field in list_fields:
-                items = getattr(source, list_field, [])
-                items_el = ET.SubElement(root, list_field)
-                for item in items:
-                    item_el = ET.SubElement(items_el, "ingredient")
-                    ET.SubElement(item_el, "id").text = item.id
-                    ET.SubElement(item_el, "name").text = item.name
-                    if hasattr(item, "gross_weight"):
-                        ET.SubElement(item_el, "gross_weight").text = f"{item.gross_weight:.2f}"
-                    if hasattr(item, "net_weight"):
-                        ET.SubElement(item_el, "net_weight").text = f"{item.net_weight:.2f}"
-
-            if hasattr(source, "total_gross_weight") and hasattr(source, "total_net_weight"):
-                totals = ET.SubElement(root, "totals")
-                ET.SubElement(totals, "total_gross").text = f"{source.total_gross_weight:.2f}"
-                ET.SubElement(totals, "total_net").text = f"{source.total_net_weight:.2f}"
 
         result = report_result_dto()
         result.text = self._to_string(root)

@@ -2,10 +2,16 @@ from Src.Core.abstract_report import abstract_report
 from Src.Dtos.report_result_dto import report_result_dto
 from Src.Core.base_model import base_model
 from Src.Core.common import common
+from Src.Models.recipe_model import recipe_model
 
 
 class html_report(abstract_report):
     """Формирует отчёт в формате HTML (текстовое представление)"""
+
+    def __init__(self):
+        super().__init__()
+        # Связка конкретного составного типа с внутренним методом
+        self.register(recipe_model, self._build_recipe)
 
     @property
     def mime_type(self) -> str:
@@ -44,15 +50,36 @@ class html_report(abstract_report):
             f'</head>\n<body>\n{body}\n</body>\n</html>'
         )
 
-    def build(self, source: base_model) -> report_result_dto:
-        """Формирует HTML-отчёт для любой сущности полностью на основе рефлексии"""
+    def _build_recipe(self, recipe: recipe_model) -> report_result_dto:
+        """Специализированный построитель HTML-отчёта для технологической карты"""
+        rows = ""
+        for item in recipe.ingredients:
+            rows += (
+                f"  <tr><td>{item.id}</td><td>{item.name}</td>"
+                f"<td>{item.gross_weight:.2f}</td><td>{item.net_weight:.2f}</td></tr>\n"
+            )
+
+        body = (
+            f"<h1>{recipe.name}</h1>\n"
+            f"<div class='meta'><b>Код:</b> {recipe.id}</div>\n"
+            f"<div class='meta'><b>Блюдо:</b> {recipe.owner.name}</div>\n"
+            f"<div class='meta'><b>Порций:</b> {recipe.portions}</div>\n"
+            f"<div class='meta'><b>Способ приготовления:</b> {recipe.preparation_method or '—'}</div>\n"
+            f"<h2>Состав</h2>\n"
+            f"<table>\n"
+            f"  <tr><th>Код</th><th>Наименование</th><th>Брутто (г)</th><th>Нетто (г)</th></tr>\n"
+            f"{rows}</table>\n"
+            f"<p><b>Итого Брутто:</b> {recipe.total_gross_weight:.2f} г | "
+            f"<b>Итого Нетто:</b> {recipe.total_net_weight:.2f} г</p>\n"
+        )
+
+        result = report_result_dto()
+        result.text = self._wrap(body)
+        return result
+
+    def _build_generic(self, source: base_model) -> report_result_dto:
+        """Универсальный построитель HTML для любой сущности на основе рефлексии"""
         scalar_fields = common.get_fields(source, is_common=True)
-        all_fields = common.get_fields(source, is_common=False)
-        list_fields = [f for f in all_fields if f not in scalar_fields]
-
-        entity_title = self.__entity_titles.get(source.__class__.__name__, "Отчёт")
-
-        # Универсальный вывод метаданных сущности через рефлексию
         meta_divs = ""
         for field in scalar_fields:
             if field == "name":
@@ -61,27 +88,8 @@ class html_report(abstract_report):
             val_str = self._format_value(getattr(source, field), source)
             meta_divs += f"<div class='meta'><b>{title}:</b> {val_str}</div>\n"
 
+        entity_title = self.__entity_titles.get(source.__class__.__name__, "Отчёт")
         body = f"<h1>{entity_title}: {source.name}</h1>\n{meta_divs}"
-
-        # Если сущность составная (содержит списки / табличные части)
-        if list_fields:
-            for list_field in list_fields:
-                items = getattr(source, list_field, [])
-                if not items:
-                    continue
-                list_title = common.get_field_title(source, list_field)
-                rows = ""
-                for item in items:
-                    rows += (
-                        f"  <tr><td>{item.id}</td><td>{item.name}</td>"
-                        f"<td>{getattr(item, 'gross_weight', 0):.2f}</td><td>{getattr(item, 'net_weight', 0):.2f}</td></tr>\n"
-                    )
-                body += (
-                    f"<h2>{list_title}</h2>\n"
-                    f"<table>\n"
-                    f"  <tr><th>Код</th><th>Наименование</th><th>Брутто (г)</th><th>Нетто (г)</th></tr>\n"
-                    f"{rows}</table>\n"
-                )
 
         result = report_result_dto()
         result.text = self._wrap(body)

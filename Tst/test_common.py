@@ -12,6 +12,7 @@ from Src.Logics.html_report import html_report
 from Src.Logics.xml_report import xml_report
 from Src.Logics.text_report import text_report
 from Src.Core.abstract_report_factory import abstract_factory
+from Src.Dtos.report_result_dto import report_result_dto
 
 
 def test_common_get_fields_none_raises():
@@ -121,4 +122,40 @@ def test_common_get_field_title_from_docstrings():
     assert common.get_field_title(recipe_model, "total_gross_weight") == "Итого Брутто"
     # Для неизвестного поля возвращается отформатированное имя
     assert common.get_field_title(nomenclature_model, "unknown_field") == "Unknown field"
+
+def test_abstract_report_register_custom_handler():
+    """
+    Сценарий: динамическая регистрация специализированного обработчика типа в abstract_report
+    Ожидаемый результат: метод build вызывает зарегистрированный через register обработчик,
+    а незарегистрированные типы обрабатываются через _build_generic
+    """
+    # Подготовка
+    report = text_report()
+    called = []
+
+    def custom_handler(src):
+        called.append(src)
+        result = report_result_dto()
+        result.text = f"CUSTOM: {src.name}"
+        return result
+
+    # Регистрируем специализированный обработчик для номенклатуры
+    report.register(nomenclature_model, custom_handler)
+    g = unit_model.create_gram()
+    raw = nomenclature_group_model.create_raw()
+    nom = nomenclature_model.create_product("Сахар", "Сахар-песок", raw, g)
+
+    # Действие 1: вызов для зарегистрированного типа
+    result_nom = report.build(nom)
+
+    # Проверка 1: сработал зарегистрированный обработчик
+    assert len(called) == 1
+    assert called[0] is nom
+    assert result_nom.text == "CUSTOM: Сахар"
+
+    # Действие и Проверка 2: незарегистрированный тип (unit_model) идёт через стандартный _build_generic
+    unit = unit_model.create_gram()
+    result_unit = report.build(unit)
+    assert "Единица измерения" in result_unit.text
+
 

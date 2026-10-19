@@ -2,10 +2,16 @@ from Src.Core.abstract_report import abstract_report
 from Src.Dtos.report_result_dto import report_result_dto
 from Src.Core.base_model import base_model
 from Src.Core.common import common
+from Src.Models.recipe_model import recipe_model
 
 
 class markdown_report(abstract_report):
     """Формирует отчёт в формате Markdown (бинарные данные для скачивания)"""
+
+    def __init__(self):
+        super().__init__()
+        # Связка конкретного составного типа с внутренним методом
+        self.register(recipe_model, self._build_recipe)
 
     @property
     def mime_type(self) -> str:
@@ -28,45 +34,51 @@ class markdown_report(abstract_report):
         "unit_model": "Единица измерения",
     }
 
-    def build(self, source: base_model) -> report_result_dto:
-        """Формирует Markdown-отчёт для любой сущности полностью на основе рефлексии"""
-        scalar_fields = common.get_fields(source, is_common=True)
-        all_fields = common.get_fields(source, is_common=False)
-        list_fields = [f for f in all_fields if f not in scalar_fields]
+    def _build_recipe(self, recipe: recipe_model) -> report_result_dto:
+        """Специализированный построитель Markdown-отчёта для технологической карты"""
+        lines = [
+            f"# Технологическая карта: {recipe.name}",
+            "",
+            f"**Код:** `{recipe.id}`",
+            f"**Блюдо:** {recipe.owner.name}",
+            f"**Порций:** {recipe.portions}",
+            f"**Способ приготовления:** {recipe.preparation_method or '—'}",
+            "",
+            "## Состав",
+            "",
+            "| Код | Наименование | Брутто (г) | Нетто (г) |",
+            "|-----|-------------|-----------|----------|",
+        ]
+        for item in recipe.ingredients:
+            lines.append(
+                f"| `{item.id}` | {item.name} | {item.gross_weight:.2f} | {item.net_weight:.2f} |"
+            )
+        lines += [
+            "",
+            f"**Итого Брутто:** {recipe.total_gross_weight:.2f} г",
+            f"**Итого Нетто:** {recipe.total_net_weight:.2f} г",
+        ]
 
+        text = "\n".join(lines)
+        result = report_result_dto()
+        result.binary = list(text.encode("utf-8"))
+        return result
+
+    def _build_generic(self, source: base_model) -> report_result_dto:
+        """Универсальный построитель Markdown для любой сущности на основе рефлексии"""
+        scalar_fields = common.get_fields(source, is_common=True)
         entity_title = self.__entity_titles.get(source.__class__.__name__, "Отчёт")
 
         lines = [
             f"# {entity_title}: {source.name}",
             "",
         ]
-
-        # Вывод всех метаданных через рефлексию
         for field in scalar_fields:
             if field == "name":
                 continue
             title = common.get_field_title(source, field)
             val_str = self._format_value(getattr(source, field), source)
             lines.append(f"**{title}:** {val_str}")
-
-        # Если сущность составная (табличная часть)
-        if list_fields:
-            for list_field in list_fields:
-                items = getattr(source, list_field, [])
-                if not items:
-                    continue
-                list_title = common.get_field_title(source, list_field)
-                lines += [
-                    "",
-                    f"## {list_title}",
-                    "",
-                    "| Код | Наименование | Брутто (г) | Нетто (г) |",
-                    "|-----|-------------|-----------|----------|",
-                ]
-                for item in items:
-                    lines.append(
-                        f"| `{item.id}` | {item.name} | {getattr(item, 'gross_weight', 0):.2f} | {getattr(item, 'net_weight', 0):.2f} |"
-                    )
 
         text = "\n".join(lines)
         result = report_result_dto()
