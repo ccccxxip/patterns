@@ -158,3 +158,27 @@ class storage_manager(abstract_manager):
     @property
     def recipes(self) -> list:
         return self.__data["recipe"]
+        
+    def get_entity(self, entity_type: str, entity_id: str):
+        """
+        Ищет сущность в хранилище по типу и идентификатору (или наименованию).
+        Метод инкапсулирует логику доступа к данным в storage_manager
+        """
+        if not self.is_loaded:
+            self.load()
+
+        type_map = {
+            "nomenclature": self.nomenclatures,
+            "unit": self.units,
+            "recipe": self.recipes,
+        }
+
+        items = type_map.get(entity_type)
+        if items is None:
+            return None
+
+        for item in items:
+            owner_name = getattr(item, "owner", None) and getattr(item.owner, "name", None)
+            if item.id == entity_id or item.name == entity_id or owner_name == entity_id:
+                return item
+        return None

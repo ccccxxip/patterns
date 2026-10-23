@@ -3,6 +3,7 @@ from Src.Core.abstract_manager import abstract_manager
 from Src.Core.validator import validator, operation_exception
 from Src.Models.settings_model import settings_model
 from Src.Models.organization_model import organization_model
+from Src.Dtos.report_type_dto import report_type_enum
 
 
 class settings_manager(abstract_manager):
@@ -101,6 +102,14 @@ class settings_manager(abstract_manager):
         if "is_first_start" in self.__data:
             self.__settings.is_first_start = bool(self.__data["is_first_start"])
 
+        # Загрузка формата вывода отчётов
+        # Ожидается строка: "TXT", "CSV", "MARKDOWN", "XML", "HTML"
+        if "response_format" in self.__data:
+            raw_format = self.__data["response_format"]
+            try:
+                self.__settings.response_format = report_type_enum[raw_format.upper()]
+            except (KeyError, AttributeError):
+                success = False
         return success
 
     @property  

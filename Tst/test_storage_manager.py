@@ -68,3 +68,26 @@ def test_storage_manager_first_start_generates_data():
     assert len(st_mgr.groups) == 5         # Сырье, Готовая продукция, Полуфабрикаты, Упаковка и др.
     assert len(st_mgr.warehouses) == 1     # Основной склад
     assert len(st_mgr.nomenclatures) > 2   # Убеждаемся, что сгенерировано полноценное меню, а не 2 продукта
+
+def test_storage_manager_get_entity():
+    """
+    Сценарий: поиск сущности в хранилище через метод get_entity
+    Ожидаемый результат: метод находит существующую сущность по имени/id и возвращает None для неизвестных
+    """
+    # Подготовка: получаем менеджер и загружаем данные
+    mgr = storage_manager()
+    mgr.load()
+
+    # Действие и Проверка: поиск рецепта
+    recipe = mgr.get_entity("recipe", "Сборка пасты")
+    assert recipe is not None
+    assert recipe.name == "Сборка пасты"
+
+    # Действие и Проверка: поиск номенклатуры
+    nom = mgr.get_entity("nomenclature", "Сахар")
+    assert nom is not None
+    assert nom.name == "Сахар"
+
+    # Действие и Проверка: несуществующая сущность или неизвестный тип возвращают None
+    assert mgr.get_entity("recipe", "несуществующий_id") is None
+    assert mgr.get_entity("unknown_type", "тест") is None
