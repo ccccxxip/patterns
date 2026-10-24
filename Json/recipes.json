@@ -1,0 +1,174 @@
+[
+    {
+        "id": "78f01f2b-68b9-4ae2-80cb-82d53487c22b",
+        "name": "Приготовление соуса",
+        "portions": 2,
+        "preparation_method": "Обжарить чеснок, курицу и шампиньоны, добавить сливки и соль, тушить 3-4 минуты",
+        "total_gross_weight": 460.5,
+        "total_net_weight": 438.5,
+        "owner": {
+            "id": "6a8164c0-24d9-4dbb-b090-f68dd19b4ea2",
+            "name": "Сливочно-грибной соус"
+        },
+        "ingredients": [
+            {
+                "gross_weight": 160.0,
+                "id": "f29089e2-3586-46c3-b5a3-1fa7bbeee5d6",
+                "name": "Куриное филе",
+                "net_weight": 150.0,
+                "nomenclature": {
+                    "id": "9dca15b2-b0a0-4b13-bac3-f1bc648a5668",
+                    "name": "Куриное филе"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            },
+            {
+                "gross_weight": 110.0,
+                "id": "5f951663-19ac-44f7-9d86-6d27fc3519bc",
+                "name": "Шампиньоны свежие",
+                "net_weight": 100.0,
+                "nomenclature": {
+                    "id": "7ec94bc9-323d-4c87-a7be-f314bc15474b",
+                    "name": "Шампиньоны свежие"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            },
+            {
+                "gross_weight": 150.0,
+                "id": "de418716-9268-464a-806f-aeda855af26c",
+                "name": "Сливки 20%",
+                "net_weight": 150.0,
+                "nomenclature": {
+                    "id": "1c42d3ef-98d8-4bf3-8f95-1df4a737efa2",
+                    "name": "Сливки 20%"
+                },
+                "unit": {
+                    "id": "0732bb3a-1383-4382-adb5-c2653550f90e",
+                    "name": "Миллилитр (мл)"
+                }
+            },
+            {
+                "gross_weight": 30.0,
+                "id": "1151c933-34b4-4f98-b472-887f51a9d8a5",
+                "name": "Масло растительное",
+                "net_weight": 30.0,
+                "nomenclature": {
+                    "id": "ae3173dc-63d0-4101-940f-4fe4412b8ed0",
+                    "name": "Масло растительное"
+                },
+                "unit": {
+                    "id": "0732bb3a-1383-4382-adb5-c2653550f90e",
+                    "name": "Миллилитр (мл)"
+                }
+            },
+            {
+                "gross_weight": 7.0,
+                "id": "e14840de-157e-4320-a86f-611e2bf664d8",
+                "name": "Чеснок",
+                "net_weight": 5.0,
+                "nomenclature": {
+                    "id": "5b49b093-0748-468d-8dc6-a476d4164772",
+                    "name": "Чеснок"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            },
+            {
+                "gross_weight": 3.5,
+                "id": "d874fd52-b747-4774-8493-d2099cd27145",
+                "name": "Соль",
+                "net_weight": 3.5,
+                "nomenclature": {
+                    "id": "14b3802c-c560-4b93-b9b0-78004807481a",
+                    "name": "Соль"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            }
+        ]
+    },
+    {
+        "id": "62899097-e35e-4092-9795-d3d6eef7b39e",
+        "name": "Сборка пасты",
+        "portions": 1,
+        "preparation_method": "Отварить пасту до состояния альденте, смешать с соусом, посыпать пармезаном, упаковать",
+        "total_gross_weight": 382.25,
+        "total_net_weight": 349.25,
+        "owner": {
+            "id": "e1cf9e6c-a688-4b66-9171-66649e4977db",
+            "name": "Паста сливочная с курицей"
+        },
+        "ingredients": [
+            {
+                "gross_weight": 100.0,
+                "id": "87631928-3d8c-41bd-b106-aeafcb1fb1cf",
+                "name": "Паста (феттуччине)",
+                "net_weight": 100.0,
+                "nomenclature": {
+                    "id": "ea5c431c-4557-4dfd-8d29-4d95d56e3c3c",
+                    "name": "Паста (феттуччине)"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            },
+            {
+                "gross_weight": 230.25,
+                "id": "0437f224-e194-4c82-b329-5edb927e4ef6",
+                "name": "Сливочно-грибной соус",
+                "net_weight": 219.25,
+                "nomenclature": {
+                    "id": "6a8164c0-24d9-4dbb-b090-f68dd19b4ea2",
+                    "name": "Сливочно-грибной соус"
+                },
+                "recipe": {
+                    "id": "78f01f2b-68b9-4ae2-80cb-82d53487c22b",
+                    "name": "Приготовление соуса"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            },
+            {
+                "gross_weight": 32.0,
+                "id": "1a12dfcc-4e47-4268-96a8-cb305141ffb9",
+                "name": "Сыр Пармезан",
+                "net_weight": 30.0,
+                "nomenclature": {
+                    "id": "a562cbc4-955e-42b2-a316-84444522ea61",
+                    "name": "Сыр Пармезан"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            },
+            {
+                "gross_weight": 20.0,
+                "id": "7ba7634c-e9ff-4b59-af08-0224b415f849",
+                "name": "Контейнер крафтовый",
+                "net_weight": 0.0,
+                "nomenclature": {
+                    "id": "023bb10a-ce6a-4819-a35b-bebc12d9bc01",
+                    "name": "Контейнер крафтовый"
+                },
+                "unit": {
+                    "id": "a8ee55e7-42c7-4588-8dba-eb3665394468",
+                    "name": "Грамм (г)"
+                }
+            }
+        ]
+    }
+]
