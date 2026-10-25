@@ -7,6 +7,8 @@ from Src.Core.common import common
 from Src.Logics.basic_convertor import basic_convertor
 from Src.Logics.datetime_convertor import datetime_convertor
 from Src.Logics.reference_convertor import reference_convertor
+from Src.Models.unit_model import unit_model
+from enum import Enum
 
 
 class convert_factory:
@@ -69,7 +71,7 @@ class convert_factory:
         )
 
 
-    def Convert(self, item: object):
+    def Convert(self, item: object, visited: set = None):
         """
         Преобразует объект любого типа в структуру словарей
         """
@@ -83,32 +85,51 @@ class convert_factory:
         if isinstance(item, (datetime, date)):
             return self.__datetime.Convert(item)["value"]
 
+        if isinstance(item, Enum):
+            return item.value
+
+        if visited is None:
+            visited = set()
+
         # Коллекции (списки, кортежи, словари)
         if isinstance(item, (list, tuple, set)):
-            return [self.Convert(elem) for elem in item]
+            return [self.Convert(elem, visited) for elem in item]
 
         if isinstance(item, dict):
-            return {k: self.Convert(v) for k, v in item.items()}
+            return {k: self.Convert(v, visited) for k, v in item.items()}
 
         # Доменные сущности
         if isinstance(item, base_model):
+            item_id = getattr(item, "id", None) or id(item)
+            if item_id in visited:
+                return {"id": item.id, "name": getattr(item, "name", "")}
+
+            current_visited = set(visited)
+            current_visited.add(item_id)
+
             result = {}
+            # Базовые скалярные поля и даты
             result.update(self.__basic.Convert(item))
             result.update(self.__datetime.Convert(item))
-            result.update(self.__reference.Convert(item))
 
-            # Вложенные коллекции (список ингредиентов в рецепте)
+            # Обрабатываем все свойства модели
             for field in common.get_fields(item, is_common=False):
                 if field not in result:
                     val = getattr(item, field, None)
-                    if isinstance(val, (list, tuple, set, dict)):
-                        result[field] = self.Convert(val)
+                    # Если base_unit ссылается на саму себя
+                    if isinstance(item, unit_model) and field == "base_unit":
+                        if val is item or (val is not None and getattr(val, "id", None) == item.id):
+                            result[field] = None
+                        else:
+                            result[field] = self.Convert(val, current_visited)
+                    else:
+                        result[field] = self.Convert(val, current_visited)
 
             return result
 
         # Другой объект со свойствами
         try:
-            return {field: self.Convert(getattr(item, field, None))
+            return {field: self.Convert(getattr(item, field, None), visited)
                     for field in common.get_fields(item, is_common=False)}
         except Exception:
             return str(item)

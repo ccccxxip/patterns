@@ -12,7 +12,7 @@ from Src.Models.recipe_model import recipe_model
 from Src.Models.ingredient_model import ingredient_model
 from Src.Logics.storage_manager import storage_manager
 import os
-
+import json 
 
 def test_convert_factory_create_returns_correct_convertors():
     """
@@ -186,29 +186,36 @@ def test_convert_factory_to_json():
     assert '"id":' in json_str
 
 
-def test_export_storage_data_to_json_files():
+def test_export_storage_data_to_single_json_file():
     """
-    Сценарий: Проверка экспорта всех коллекций хранилища данных в файлы JSON
-    Ожидаемый результат: Все 5 коллекций успешно сериализуются в JSON-файлы
+    Сценарий: Проверка экспорта всех данных хранилища в единый JSON-файл
+    Ожидаемый результат: Все коллекции storage_manager выгружаются в один файл
     """
     # Подготовка
     storage = storage_manager()
     storage.convert()
     factory = convert_factory()
 
-    collections = {
-        "groups.json": storage.data["group"],
-        "nomenclature.json": storage.data["nomenclature"],
-        "recipes.json": storage.data["recipe"],
-        "units.json": storage.data["unit"],
-        "warehouses.json": storage.data["warehouse"]
-    }
+    # Действие: сериализуем весь словарь хранилища целиком
+    json_text = factory.to_json(storage.data)
+    assert len(json_text) > 0
 
-    # Действие и Проверка
-    for file_name, items in collections.items():
-        json_text = factory.to_json(items)
-        assert len(json_text) > 0
-        path = os.path.join("Json", file_name)
-        with open(path, "w", encoding="utf-8") as f:
-            f.write(json_text)
-        assert os.path.exists(path)
+    # Проверка: записываем в единый файл
+    path = os.path.join("Json", "storage.json")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(json_text)
+
+    assert os.path.exists(path)
+
+    # Проверка: все 5 коллекций на месте
+    saved_data = json.loads(json_text)
+    assert "warehouse" in saved_data
+    assert "unit" in saved_data
+    assert "group" in saved_data
+    assert "nomenclature" in saved_data
+    assert "recipe" in saved_data
+
+    # Проверка: у единицы измерения есть коэффициент и базовая единица
+    nom_unit = saved_data["nomenclature"][0]["unit"]
+    assert "ratio" in nom_unit
+    assert "base_unit" in nom_unit
