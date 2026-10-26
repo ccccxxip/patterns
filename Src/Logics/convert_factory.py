@@ -1,5 +1,4 @@
 from datetime import datetime, date
-import json
 from Src.Core.abstract_convertor import abstract_convertor
 from Src.Core.base_model import base_model
 from Src.Core.exception import arguments_exception
@@ -7,22 +6,23 @@ from Src.Core.common import common
 from Src.Logics.basic_convertor import basic_convertor
 from Src.Logics.datetime_convertor import datetime_convertor
 from Src.Logics.reference_convertor import reference_convertor
-from Src.Models.unit_model import unit_model
 from enum import Enum
+import json
+from Src.Core.abstract_convert_factory import abstract_convert_factory
 
 
-class convert_factory:
+class convert_factory(abstract_convert_factory):
     """
     Класс-фабрика конвертеров данных
-    Подбирает конвертер по типу данных (метод create) и преобразует
-    любые объекты в структуру словарей (метод Convert)
+    Реализует abstract_convert_factory, подбирает конвертер по типу данных (метод create)
+    и преобразует любые объекты в структуру словарей (метод Convert)
     """
 
     def __init__(self):
-        """Инициализирует фабрику экземплярами спец конвертеров"""
-        self.__basic = basic_convertor()
-        self.__datetime = datetime_convertor()
-        self.__reference = reference_convertor()
+        """Инициализирует фабрику экземплярами спец конвертеров, связывая их с фабрикой"""
+        self.__basic = basic_convertor(self)
+        self.__datetime = datetime_convertor(self)
+        self.__reference = reference_convertor(self)
 
         # Таблица соответствия типов для фабричного метода create
         self.__type_mapping: dict = {
@@ -70,7 +70,6 @@ class convert_factory:
             f"Не удалось подобрать конвертер для типа: {target_type.__name__}"
         )
 
-
     def Convert(self, item: object, visited: set = None):
         """
         Преобразует объект любого типа в структуру словарей
@@ -78,7 +77,7 @@ class convert_factory:
         if item is None:
             return None
 
-        # Простые типы и даты
+        # Простые типы и даты через специализированные конвертеры
         if isinstance(item, (int, float, str, bool)):
             return self.__basic.Convert(item)["value"]
 
@@ -91,18 +90,20 @@ class convert_factory:
         if visited is None:
             visited = set()
 
-        # Коллекции (списки, кортежи, словари)
+        # Коллекции (списки, кортежи, множества)
         if isinstance(item, (list, tuple, set)):
             return [self.Convert(elem, visited) for elem in item]
 
+        # Словари
         if isinstance(item, dict):
             return {k: self.Convert(v, visited) for k, v in item.items()}
 
-        # Доменные сущности
+        # Доменные сущности (наследники base_model)
         if isinstance(item, base_model):
-            item_id = getattr(item, "id", None) or id(item)
+            item_id = id(item)
             if item_id in visited:
-                return {"id": item.id, "name": getattr(item, "name", "")}
+                # Циклическая зависимость: возвращаем ссылочное представление
+                return self.__reference.Convert(item)
 
             current_visited = set(visited)
             current_visited.add(item_id)
@@ -112,16 +113,13 @@ class convert_factory:
             result.update(self.__basic.Convert(item))
             result.update(self.__datetime.Convert(item))
 
-            # Обрабатываем все свойства модели
+            # Обрабатываем все свойства модели через рефлексию
             for field in common.get_fields(item, is_common=False):
                 if field not in result:
                     val = getattr(item, field, None)
-                    # Если base_unit ссылается на саму себя
-                    if isinstance(item, unit_model) and field == "base_unit":
-                        if val is item or (val is not None and getattr(val, "id", None) == item.id):
-                            result[field] = None
-                        else:
-                            result[field] = self.Convert(val, current_visited)
+                    # Универсальная проверка ссылки объекта на самого себя
+                    if val is item:
+                        result[field] = None
                     else:
                         result[field] = self.Convert(val, current_visited)
 

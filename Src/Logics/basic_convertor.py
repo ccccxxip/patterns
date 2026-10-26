@@ -12,6 +12,12 @@ class basic_convertor(abstract_convertor):
     # Кортеж поддерживаемых типов
     __basic_types: tuple = (int, float, str, bool)
 
+    def __init__(self, factory=None):
+        """
+        Инициализация базового конвертера
+        """
+        super().__init__(factory)
+
     def Convert(self, item: object, field_name: str = None) -> dict:
         """
         Преобразует простое значение или извлекает простые поля из объекта в словарь

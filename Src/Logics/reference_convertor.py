@@ -7,21 +7,31 @@ from Src.Core.common import common
 class reference_convertor(abstract_convertor):
     """
     Конвертер для формирования словаря по ссылочным типам
-    Преобразует сущности base_model в словарное представление ссылки {"id": ..., "name": ...}
+    Преобразует сущности base_model в словарное представление ссылки
     """
+
+    def __init__(self, factory=None):
+        super().__init__(factory)
+
+    @staticmethod
+    def _get_base_fields() -> list:
+        """
+        Динамическое извлечение свойств base_model через интроспекцию
+        """
+        return [
+            attr for attr in dir(base_model)
+            if not attr.startswith("_") and isinstance(getattr(base_model, attr, None), property)
+        ]
+
+    def _create_reference(self, item: base_model) -> dict:
+        """
+        Формирует словарь ссылки на основе свойств базовой модели
+        """
+        return {field: getattr(item, field, None) for field in self._get_base_fields()}
 
     def Convert(self, item: object, field_name: str = None) -> dict:
         """
         Преобразует ссылочную сущность (base_model) или извлекает ссылочные поля из объекта
-
-        item: object
-            Сущность base_model или объект, содержащий свойства-ссылки на base_model
-
-        field_name: str, optional
-            Имя поля для обертки результата в {field_name: {"id": ..., "name": ...}}
-
-        returns: dict
-            Словарь вида {"id": ..., "name": ...} или {имя_поля_ссылки: {"id": ..., "name": ...}}
         """
         if item is None:
             raise arguments_exception("item", "Значение не может быть None")
@@ -35,12 +45,12 @@ class reference_convertor(abstract_convertor):
 
         # Если явно передано имя поля для одиночной ссылки
         if field_name is not None and isinstance(item, base_model):
-            return {field_name: {"id": item.id, "name": item.name}}
+            return {field_name: self._create_reference(item)}
 
         # Передан словарь — фильтруем ссылки
         if isinstance(item, dict):
             return {
-                k: {"id": v.id, "name": v.name}
+                k: self._create_reference(v)
                 for k, v in item.items()
                 if isinstance(v, base_model)
             }
@@ -52,7 +62,7 @@ class reference_convertor(abstract_convertor):
             for field in fields:
                 val = getattr(item, field, None)
                 if isinstance(val, base_model) and val is not item:
-                    result[field] = {"id": val.id, "name": val.name}
+                    result[field] = self._create_reference(val)
 
             # Если объект содержит вложенные ссылки (nomenclature_model -> group, unit)
             if result:
@@ -60,7 +70,7 @@ class reference_convertor(abstract_convertor):
 
             # Если вложенных ссылок нет, но сам объект == ссылка (base_model)
             if isinstance(item, base_model):
-                return {"id": item.id, "name": item.name}
+                return self._create_reference(item)
 
             return result
         except Exception:

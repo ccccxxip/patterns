@@ -13,6 +13,12 @@ class datetime_convertor(abstract_convertor):
     # Кортеж поддерживаемых типов даты и времени
     __datetime_types: tuple = (datetime, date)
 
+    def __init__(self, factory=None):
+        """
+        Инициализация конвертера даты и времени
+        """
+        super().__init__(factory)
+
     def Convert(self, item: object, field_name: str = None) -> dict:
         """
         Преобразует значение DateTime или извлекает поля DateTime из объекта в словарь
