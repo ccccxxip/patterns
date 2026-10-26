@@ -77,12 +77,11 @@ class convert_factory(abstract_convert_factory):
         if item is None:
             return None
 
-        # Простые типы и даты через специализированные конвертеры
-        if isinstance(item, (int, float, str, bool)):
-            return self.__basic.Convert(item)["value"]
+        # Простые скалярные типы и даты подбираются через словарь фабрики
+        item_type = type(item)
+        if item_type in self.__type_mapping:
+            return self.__type_mapping[item_type].Convert(item)["value"]
 
-        if isinstance(item, (datetime, date)):
-            return self.__datetime.Convert(item)["value"]
 
         if isinstance(item, Enum):
             return item.value

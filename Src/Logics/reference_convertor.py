@@ -2,7 +2,7 @@ from Src.Core.abstract_convertor import abstract_convertor
 from Src.Core.base_model import base_model
 from Src.Core.exception import arguments_exception
 from Src.Core.common import common
-
+from Src.Core.abstract_convert_factory import abstract_convert_factory
 
 class reference_convertor(abstract_convertor):
     """
@@ -10,9 +10,9 @@ class reference_convertor(abstract_convertor):
     Преобразует сущности base_model в словарное представление ссылки
     """
 
-    def __init__(self, factory=None):
+    def __init__(self, factory: abstract_convert_factory = None):
         super().__init__(factory)
-
+        
     @staticmethod
     def _get_base_fields() -> list:
         """

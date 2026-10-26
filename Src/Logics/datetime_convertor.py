@@ -2,6 +2,7 @@ from datetime import datetime, date
 from Src.Core.abstract_convertor import abstract_convertor
 from Src.Core.exception import arguments_exception
 from Src.Core.common import common
+from Src.Core.abstract_convert_factory import abstract_convert_factory
 
 
 class datetime_convertor(abstract_convertor):
@@ -13,7 +14,7 @@ class datetime_convertor(abstract_convertor):
     # Кортеж поддерживаемых типов даты и времени
     __datetime_types: tuple = (datetime, date)
 
-    def __init__(self, factory=None):
+    def __init__(self, factory: abstract_convert_factory = None):
         """
         Инициализация конвертера даты и времени
         """

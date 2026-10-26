@@ -1,6 +1,7 @@
 from Src.Core.abstract_convertor import abstract_convertor
 from Src.Core.exception import arguments_exception
 from Src.Core.common import common
+from Src.Core.abstract_convert_factory import abstract_convert_factory
 
 
 class basic_convertor(abstract_convertor):
@@ -12,7 +13,7 @@ class basic_convertor(abstract_convertor):
     # Кортеж поддерживаемых типов
     __basic_types: tuple = (int, float, str, bool)
 
-    def __init__(self, factory=None):
+    def __init__(self, factory: abstract_convert_factory = None):
         """
         Инициализация базового конвертера
         """
