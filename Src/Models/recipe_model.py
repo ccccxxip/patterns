@@ -174,3 +174,21 @@ class recipe_model(base_model):
         recipe.add_ingredient(ingredient_model(box, 0, 20, gram))
 
         return recipe
+
+    @classmethod
+    def create(cls, data: dict, owner: nomenclature_model) -> "recipe_model":
+        """
+        Фабричный метод создания рецепта из словаря данных
+        """
+        if not isinstance(data, dict):
+            raise arguments_exception("data", "Ожидался словарь данных")
+
+        name = data.get("name", "")
+        prep_method = data.get("preparation_method", "")
+        portions = int(data.get("portions", 1))
+        item = cls(name=name, owner=owner, preparation_method=prep_method, portions=portions)
+
+        if data.get("id"):
+            item.id = data["id"]
+
+        return item

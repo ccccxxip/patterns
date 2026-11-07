@@ -116,3 +116,21 @@ class nomenclature_model(base_model):
     def create_packaging(name: str, full_name: str, group: nomenclature_group_model, unit: unit_model) -> "nomenclature_model":
         """ Фабричный метод: номенклатура типа "Упаковка" """
         return nomenclature_model(name, full_name, group, unit, nomenclature_type.PACKAGING)
+
+    @classmethod
+    def create(cls, data: dict, group: nomenclature_group_model, unit: unit_model,
+               nom_type: nomenclature_type = nomenclature_type.PRODUCT) -> "nomenclature_model":
+        """
+        Фабричный метод создания номенклатуры из словаря данных
+        """
+        if not isinstance(data, dict):
+            raise arguments_exception("data", "Ожидался словарь данных")
+
+        name = data.get("name", "")
+        full_name = data.get("full_name", "")
+        item = cls(name=name, full_name=full_name, group=group, unit=unit, nom_type=nom_type)
+
+        if data.get("id"):
+            item.id = data["id"]
+
+        return item

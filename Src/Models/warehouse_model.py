@@ -35,3 +35,20 @@ class warehouse_model(base_model):
             raise arguments_exception("address", "Адрес не может быть пустым")
             
         self._address = normalized_value
+    
+    @classmethod
+    def create(cls, data: dict) -> "warehouse_model":
+        """
+        Фабричный метод создания склада из словаря данных
+        """
+        if not isinstance(data, dict):
+            raise arguments_exception("data", "Ожидался словарь данных")
+
+        name = data.get("name", "")
+        address = data.get("address", "")
+        item = cls(name=name, address=address)
+
+        if data.get("id"):
+            item.id = data["id"]
+
+        return item
