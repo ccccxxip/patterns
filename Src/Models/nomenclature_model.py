@@ -118,8 +118,8 @@ class nomenclature_model(base_model):
         return nomenclature_model(name, full_name, group, unit, nomenclature_type.PACKAGING)
 
     @classmethod
-    def create(cls, data: dict, group: nomenclature_group_model, unit: unit_model,
-               nom_type: nomenclature_type = nomenclature_type.PRODUCT) -> "nomenclature_model":
+    def create(cls, data: dict, group: nomenclature_group_model = None, unit: unit_model = None,
+               nom_type: nomenclature_type = None) -> "nomenclature_model":
         """
         Фабричный метод создания номенклатуры из словаря данных
         """
@@ -128,7 +128,15 @@ class nomenclature_model(base_model):
 
         name = data.get("name", "")
         full_name = data.get("full_name", "")
-        item = cls(name=name, full_name=full_name, group=group, unit=unit, nom_type=nom_type)
+        grp = group if group is not None else data.get("group")
+        u = unit if unit is not None else data.get("unit")
+
+        # корректный Enum-тип
+        t = nom_type if isinstance(nom_type, nomenclature_type) else data.get("nom_type", data.get("type"))
+        if not isinstance(t, nomenclature_type):
+            t = nomenclature_type.PRODUCT
+
+        item = cls(name=name, full_name=full_name, group=grp, unit=u, nom_type=t)
 
         if data.get("id"):
             item.id = data["id"]

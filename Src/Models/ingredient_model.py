@@ -149,10 +149,9 @@ class ingredient_model(base_model):
         # Создание из словаря данных (десериализация)
         if args and isinstance(args[0], dict):
             data = args[0]
-            nomenclature = kwargs.get("nomenclature") if "nomenclature" in kwargs else (args[1] if len(args) > 1 else None)
-            unit = kwargs.get("unit") if "unit" in kwargs else (args[2] if len(args) > 2 else None)
-            recipe = kwargs.get("recipe") if "recipe" in kwargs else (args[3] if len(args) > 3 else None)
-
+            nomenclature = kwargs.get("nomenclature") or data.get("nomenclature")
+            unit = kwargs.get("unit") or data.get("unit")
+            recipe = kwargs.get("recipe") or data.get("recipe")
             net_weight = float(data.get("net_weight", 0.0))
             gross_weight = float(data.get("gross_weight", 0.0))
             item = cls(nomenclature, net_weight, gross_weight, unit, recipe)

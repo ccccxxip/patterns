@@ -125,7 +125,8 @@ class unit_model(base_model):
 
         name = data.get("name", "")
         ratio = float(data.get("ratio", 1.0))
-        item = cls(name=name, ratio=ratio, base_unit=base_unit)
+        base = base_unit if base_unit is not None else data.get("base_unit")
+        item = cls(name=name, ratio=ratio, base_unit=base)
 
         if data.get("id"):
             item.id = data["id"]
