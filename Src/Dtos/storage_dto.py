@@ -8,31 +8,28 @@ from Src.Dtos.recipe_dto import recipe_dto
 
 class storage_dto:
     """Корневой DTO всего хранилища данных"""
-
-    def __init__(self, warehouse: list = None, unit: list = None,
-                 group: list = None, nomenclature: list = None,
-                 recipe: list = None):
-        self.warehouse = warehouse if warehouse is not None else []
-        self.unit = unit if unit is not None else []
-        self.group = group if group is not None else []
-        self.nomenclature = nomenclature if nomenclature is not None else []
-        self.recipe = recipe if recipe is not None else []
+    warehouse: list = None
+    unit: list = None
+    group: list = None
+    nomenclature: list = None
+    recipe: list = None
 
     @classmethod
     def from_dict(cls, data: dict) -> "storage_dto":
-        """Фабричный метод десериализации хранилища из словаря"""
+        """Создание DTO из словаря"""
         if not isinstance(data, dict):
             return None
 
         def parse_list(key: str, dto_cls):
-            if key in data and isinstance(data[key], list):
-                return [dto_cls.from_dict(item) for item in data[key] if isinstance(item, dict)]
-            return []
+            items = data.get(key, [])
+            if not isinstance(items, list):
+                return []
+            return [dto_cls.from_dict(item) for item in items if isinstance(item, dict)]
 
-        return cls(
-            warehouse=parse_list("warehouse", warehouse_dto),
-            unit=parse_list("unit", unit_dto),
-            group=parse_list("group", nomenclature_group_dto),
-            nomenclature=parse_list("nomenclature", nomenclature_dto),
-            recipe=parse_list("recipe", recipe_dto)
-        )
+        dto = cls()
+        dto.warehouse = parse_list("warehouse", warehouse_dto)
+        dto.unit = parse_list("unit", unit_dto)
+        dto.group = parse_list("group", nomenclature_group_dto)
+        dto.nomenclature = parse_list("nomenclature", nomenclature_dto)
+        dto.recipe = parse_list("recipe", recipe_dto)
+        return dto

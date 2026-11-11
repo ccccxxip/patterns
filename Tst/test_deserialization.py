@@ -29,7 +29,7 @@ def test_mapping_factory_map_warehouse():
     Ожидаемый результат: Создается объект склада с сохраненными id, наименованием и адресом
     """
     # Подготовка
-    dto = warehouse_dto(id="test-wh-id", name="Склад №1", address="ул. Ленина, 1")
+    dto = warehouse_dto.from_dict({"id": "test-wh-id", "name": "Склад №1", "address": "ул. Ленина, 1"})
     factory = mapping_factory()
 
     # Действие
@@ -48,8 +48,10 @@ def test_mapping_factory_map_unit_with_base_unit():
     Ожидаемый результат: Создаются связанные доменные модели unit_model, сохранен коэффициент ratio
     """
     # Подготовка
-    base_dto = unit_dto(id="g-id", name="Грамм (г)", ratio=1.0, base_unit=None)
-    kg_dto = unit_dto(id="kg-id", name="Килограмм (кг)", ratio=1000.0, base_unit=base_dto)
+    kg_dto = unit_dto.from_dict({
+        "id": "kg-id", "name": "Килограмм (кг)", "ratio": 1000.0,
+        "base_unit": {"id": "g-id", "name": "Грамм (г)", "ratio": 1.0, "base_unit": None}
+    })
     factory = mapping_factory()
 
     # Действие
@@ -71,16 +73,11 @@ def test_mapping_factory_map_nomenclature():
     Ожидаемый результат: Создается nomenclature_model с корректным enum-типом и связями
     """
     # Подготовка
-    u_dto = unit_dto(id="g-id", name="Грамм (г)", ratio=1.0)
-    g_dto = nomenclature_group_dto(id="raw-id", name="Сырье")
-    n_dto = nomenclature_dto(
-        id="sugar-id",
-        name="Сахар",
-        full_name="Сахар белый песок",
-        group=g_dto,
-        unit=u_dto,
-        nom_type="Продукт"
-    )
+    n_dto = nomenclature_dto.from_dict({
+        "id": "sugar-id", "name": "Сахар", "full_name": "Сахар белый песок", "type": "Продукт",
+        "group": {"id": "raw-id", "name": "Сырье"},
+        "unit":  {"id": "g-id",   "name": "Грамм (г)", "ratio": 1.0}
+    })
     factory = mapping_factory()
 
     # Действие
@@ -99,15 +96,14 @@ def test_mapping_factory_map_nomenclature():
 def test_mapping_factory_identity_cache_uniqueness():
     """
     Сценарий: Повторная ссылка на одну и ту же сущность (одинаковый id) из разных объектов
-    Ожидаемый результат: Кэш идентичности возвращает один и тот же экземпляр в памяти 
+    Ожидаемый результат: Кэш идентичности возвращает один и тот же экземпляр в памяти
     """
     # Подготовка
-    u_dto1 = unit_dto(id="same-unit-id", name="Грамм (г)", ratio=1.0)
-    u_dto2 = unit_dto(id="same-unit-id", name="Грамм (г)", ratio=1.0)
-    g_dto = nomenclature_group_dto(id="grp-id", name="Сырье")
+    unit_data = {"id": "same-unit-id", "name": "Грамм (г)", "ratio": 1.0}
+    group_data = {"id": "grp-id", "name": "Сырье"}
 
-    n1_dto = nomenclature_dto(id="n1", name="Сахар", full_name="Сахар", group=g_dto, unit=u_dto1)
-    n2_dto = nomenclature_dto(id="n2", name="Соль", full_name="Соль", group=g_dto, unit=u_dto2)
+    n1_dto = nomenclature_dto.from_dict({"id": "n1", "name": "Сахар", "full_name": "Сахар", "type": "", "group": group_data, "unit": unit_data})
+    n2_dto = nomenclature_dto.from_dict({"id": "n2", "name": "Соль",  "full_name": "Соль",  "type": "", "group": group_data, "unit": unit_data})
 
     factory = mapping_factory()
 
@@ -115,7 +111,7 @@ def test_mapping_factory_identity_cache_uniqueness():
     n1_model = factory.map(n1_dto)
     n2_model = factory.map(n2_dto)
 
-    # Проверка
+    # Проверка: один и тот же объект в памяти (кэш идентичности)
     assert n1_model.unit is n2_model.unit
     assert n1_model.group is n2_model.group
 
@@ -127,40 +123,28 @@ def test_mapping_factory_map_composite_recipe():
     """
     # Подготовка
     factory = mapping_factory()
-    u_dto = unit_dto(id="u1", name="Грамм (г)", ratio=1.0)
-    g_dto = nomenclature_group_dto(id="g1", name="Полуфабрикаты")
 
-    sauce_nom = nomenclature_dto(id="sauce-nom", name="Соус", full_name="Соус (п/ф)", group=g_dto, unit=u_dto, nom_type="Полуфабрикат")
-    chicken_nom = nomenclature_dto(id="ch-nom", name="Курица", full_name="Курица", group=g_dto, unit=u_dto, nom_type="Продукт")
+    unit_data  = {"id": "u1", "name": "Грамм (г)", "ratio": 1.0}
+    group_data = {"id": "g1", "name": "Полуфабрикаты"}
+    sauce_nom_data  = {"id": "sauce-nom", "name": "Соус",   "full_name": "Соус (п/ф)", "type": "Полуфабрикат", "group": group_data, "unit": unit_data}
+    chicken_nom_data= {"id": "ch-nom",   "name": "Курица", "full_name": "Курица",      "type": "Продукт",      "group": group_data, "unit": unit_data}
+    dish_nom_data   = {"id": "dish-nom", "name": "Паста",  "full_name": "Паста",       "type": "Продукт",      "group": group_data, "unit": unit_data}
 
-    sauce_ing = ingredient_dto(id="i1", name="Курица", gross_weight=100.0, net_weight=90.0, nomenclature=chicken_nom, unit=u_dto)
-    sauce_recipe = recipe_dto(
-        id="r-sauce",
-        name="Рецепт соуса",
-        portions=2,
-        preparation_method="Варить",
-        owner=sauce_nom,
-        ingredients=[sauce_ing]
-    )
+    sauce_recipe_data = {
+        "id": "r-sauce", "name": "Рецепт соуса", "portions": 2,
+        "preparation_method": "Варить", "owner": sauce_nom_data,
+        "ingredients": [{"id": "i1", "name": "Курица", "gross_weight": 100.0, "net_weight": 90.0,
+                         "nomenclature": chicken_nom_data, "unit": unit_data}]
+    }
+    main_recipe_data = {
+        "id": "r-main", "name": "Рецепт пасты", "portions": 1,
+        "preparation_method": "Собрать", "owner": dish_nom_data,
+        "ingredients": [{"id": "i2", "name": "Соус", "gross_weight": 50.0, "net_weight": 45.0,
+                         "nomenclature": sauce_nom_data, "unit": unit_data,
+                         "recipe": sauce_recipe_data}]
+    }
 
-    dish_nom = nomenclature_dto(id="dish-nom", name="Паста", full_name="Паста", group=g_dto, unit=u_dto, nom_type="Продукт")
-    composite_ing = ingredient_dto(
-        id="i2",
-        name="Соус",
-        gross_weight=50.0,
-        net_weight=45.0,
-        nomenclature=sauce_nom,
-        unit=u_dto,
-        recipe=sauce_recipe
-    )
-    main_recipe = recipe_dto(
-        id="r-main",
-        name="Рецепт пасты",
-        portions=1,
-        preparation_method="Собрать",
-        owner=dish_nom,
-        ingredients=[composite_ing]
-    )
+    main_recipe = recipe_dto.from_dict(main_recipe_data)
 
     # Действие
     main_model = factory.map(main_recipe)
@@ -169,7 +153,6 @@ def test_mapping_factory_map_composite_recipe():
     assert isinstance(main_model, recipe_model)
     assert main_model.id == "r-main"
     assert len(main_model.ingredients) == 1
-
     ing = main_model.ingredients[0]
     assert ing.nomenclature.name == "Соус"
     assert ing.recipe is not None
@@ -337,17 +320,15 @@ def test_mapping_factory_independent_of_loading_order():
     with open(path, "r", encoding="utf-8") as f:
         import json
         data = json.loads(f.read())
-
     dto = storage_dto.from_dict(data)
     factory = mapping_factory()
 
-    # Действие: Маппим коллекции в обратном порядке
-    recipes = [factory.map_recipe(r) for r in dto.recipe if r]
-    nomenclatures = [factory.map_nomenclature(n) for n in dto.nomenclature if n]
-    groups = [factory.map_group(g) for g in dto.group if g]
-    units = [factory.map_unit(u) for u in dto.unit if u]
-    warehouses = [factory.map_warehouse(w) for w in dto.warehouse if w]
-
+    # Действие: маппим коллекции в обратном порядке через единый универсальный метод to_model
+    recipes       = [factory.to_model(r) for r in dto.recipe       if r]
+    nomenclatures = [factory.to_model(n) for n in dto.nomenclature if n]
+    groups        = [factory.to_model(g) for g in dto.group        if g]
+    units         = [factory.to_model(u) for u in dto.unit         if u]
+    warehouses    = [factory.to_model(w) for w in dto.warehouse     if w]
     # Проверка
     assert len(recipes) == 2
     assert len(nomenclatures) == 13

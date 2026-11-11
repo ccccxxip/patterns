@@ -26,22 +26,21 @@ from Src.Logics.identity_cache import identity_cache
 class mapping_factory(abstract_mapping_factory):
     """
     Фабрика динамического преобразования DTO в доменные модели
+    таблица соответствия DTO <-> Domain + рефлексия
     """
+
     def __init__(self, cache: identity_cache = None):
-        """
-        Инициализация фабрики таблицей соответствия типов DTO <-> Domain
-        """
         super().__init__()
         self._cache = cache if cache is not None else identity_cache()
 
-        # Таблица соответствия типов
+        # Таблица соответствия
         self.__mapping: Dict[Type, Type] = {
-            warehouse_dto: warehouse_model,
-            unit_dto: unit_model,
+            warehouse_dto:          warehouse_model,
+            unit_dto:               unit_model,
             nomenclature_group_dto: nomenclature_group_model,
-            nomenclature_dto: nomenclature_model,
-            ingredient_dto: ingredient_model,
-            recipe_dto: recipe_model,
+            nomenclature_dto:       nomenclature_model,
+            ingredient_dto:         ingredient_model,
+            recipe_dto:             recipe_model,
         }
 
     @property
@@ -51,9 +50,7 @@ class mapping_factory(abstract_mapping_factory):
 
     @staticmethod
     def _parse_nomenclature_type(value: str) -> nomenclature_type:
-        """
-        Преобразует строковое значение типа из JSON в Enum nomenclature_type
-        """
+        """Преобразует строковое значение типа из JSON в Enum nomenclature_type"""
         for item in nomenclature_type:
             if item.value == value or item.name == value:
                 return item
@@ -61,15 +58,14 @@ class mapping_factory(abstract_mapping_factory):
 
     def to_model(self, source: object) -> object:
         """
-        Универсальный динамический метод преобразования DTO в доменную модель
-        Работает через рефлексию и таблицу __mapping
+        Универсальный метод преобразования DTO в доменную модель
+        Определяет тип DTO по таблице __mapping и создаёт модель через рефлексию
         """
         if source is None:
             return None
 
-        # Спец случай: контейнер всего хранилища данных
         if isinstance(source, storage_dto):
-            return self.map_storage(source)
+            return self._map_storage(source)
 
         source_type = type(source)
         domain_cls = self.__mapping.get(source_type)
@@ -79,100 +75,68 @@ class mapping_factory(abstract_mapping_factory):
                 f"Не найден маппер для типа DTO: {source_type.__name__}"
             )
 
-        # Проверяем кэш идентичности по ID (если есть)
+        # Проверяем кэш идентичности по ID
         source_id = getattr(source, "id", None)
         if source_id:
             cached = self._cache.get(source_id, domain_cls.__name__)
             if cached is not None:
                 return cached
 
-        # Динамически извлекаем свойства DTO через рефлексию
+        # Динамически извлекаем поля DTO через рефлексию
         data = {}
-
         for field, value in vars(source).items():
             if field.startswith("_"):
                 continue
-
-            # Если значение — другой вложенный DTO, маппим его рекурсивно
             if type(value) in self.__mapping:
                 data[field] = self.to_model(value)
-            # Если значение — список DTO (например, ингредиенты в рецепте)
             elif isinstance(value, list):
                 data[field] = [
                     self.to_model(item) if type(item) in self.__mapping else item
                     for item in value
                 ]
+            elif field == "type":
+                nom_type = self._parse_nomenclature_type(value) if isinstance(value, str) else value
+                data["type"] = nom_type
+                data["nom_type"] = nom_type
             else:
-                # Преобразование строки типа номенклатуры в Enum
-                if field == "type":
-                    nom_type = self._parse_nomenclature_type(value) if isinstance(value, str) else value
-                    data["type"] = nom_type
-                    data["nom_type"] = nom_type
-                else:
-                    data[field] = value
+                data[field] = value
 
-        # Создаем доменную модель через ее фабричный метод create(data)
         item = domain_cls.create(data)
 
-        # Сохраняем в кэш идентичности для избежания дубликатов
         if source_id:
             self._cache.add(source_id, item, domain_cls.__name__)
 
         return item
 
     def to_dto(self, source: object) -> object:
-        """Сконвертировать доменную модель в Dto"""
+        """Сконвертировать доменную модель в DTO"""
         if source is None:
             return None
         return source
 
     def map(self, dto_object: object) -> object:
-        """точка входа маппинга"""
+        """Универсальная точка входа маппинга"""
         return self.to_model(dto_object)
 
-    # методы для обратной совместимости
-    def map_warehouse(self, dto: warehouse_dto) -> warehouse_model:
-        return self.to_model(dto)
-
-    def map_unit(self, dto: unit_dto) -> unit_model:
-        return self.to_model(dto)
-
-    def map_group(self, dto: nomenclature_group_dto) -> nomenclature_group_model:
-        return self.to_model(dto)
-
-    def map_nomenclature(self, dto: nomenclature_dto) -> nomenclature_model:
-        return self.to_model(dto)
-
-    def map_ingredient(self, dto: ingredient_dto) -> ingredient_model:
-        return self.to_model(dto)
-
-    def map_recipe(self, dto: recipe_dto) -> recipe_model:
-        return self.to_model(dto)
-
-    def map_storage(self, dto: storage_dto) -> dict:
+    def _map_storage(self, dto: storage_dto) -> dict:
         """Преобразует корневой DTO хранилища в словарь списков доменных моделей"""
         if not dto:
             return {}
-
         return {
-            "warehouse": [self.to_model(w) for w in dto.warehouse if w],
-            "unit": [self.to_model(u) for u in dto.unit if u],
-            "group": [self.to_model(g) for g in dto.group if g],
-            "nomenclature": [self.to_model(n) for n in dto.nomenclature if n],
-            "recipe": [self.to_model(r) for r in dto.recipe if r],
+            "warehouse":   [self.to_model(w) for w in dto.warehouse    if w],
+            "unit":        [self.to_model(u) for u in dto.unit         if u],
+            "group":       [self.to_model(g) for g in dto.group        if g],
+            "nomenclature":[self.to_model(n) for n in dto.nomenclature if n],
+            "recipe":      [self.to_model(r) for r in dto.recipe       if r],
         }
 
     def from_json(self, json_text: str) -> dict:
-        """
-        Основной метод десериализации JSON в доменные модели
-        """
+        """Основной метод десериализации JSON в доменные модели"""
         if not json_text or not isinstance(json_text, str) or not json_text.strip():
             raise arguments_exception("json_text", "Строка JSON не может быть пустой")
-
         try:
             raw_data = json.loads(json_text)
         except Exception as e:
             raise arguments_exception("json_text", f"Некорректный формат JSON: {e}")
-
         dto = storage_dto.from_dict(raw_data)
-        return self.map_storage(dto)
+        return self._map_storage(dto)
