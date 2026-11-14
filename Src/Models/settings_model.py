@@ -2,6 +2,7 @@ from Src.Core.base_model import base_model
 from Src.Models.organization_model import organization_model
 from Src.Core.validator import validator
 from Src.Dtos.report_type_dto import report_type_enum
+from Src.Core.common import common
 
 
 class settings_model(base_model):
@@ -71,28 +72,19 @@ class settings_model(base_model):
 
     @classmethod
     def create(cls, data: dict) -> "settings_model":
-        """Фабричный метод создания модели настроек из словаря"""
+        """Фабричный метод создания модели настроек из словаря через рефлексию"""
         if not isinstance(data, dict):
             return cls()
 
         item = cls()
 
-        if "organization" in data and data["organization"] is not None:
-            item.organization = data["organization"]
-
-        if "boss_name" in data and data["boss_name"] is not None:
-            item.boss_name = str(data["boss_name"])
-
-        if "account_name" in data and data["account_name"] is not None:
-            item.account_name = str(data["account_name"])
-
-        if "is_first_start" in data and data["is_first_start"] is not None:
-            item.is_first_start = bool(data["is_first_start"])
-
-        if "response_format" in data and data["response_format"] is not None:
-            rf = data["response_format"]
-            if isinstance(rf, str):
-                rf = report_type_enum[rf.upper()]
-            item.response_format = rf
+        for field in common.get_fields(item):
+            if field in data and data[field] is not None:
+                val = data[field]
+                if field == "response_format" and isinstance(val, str):
+                    val = report_type_enum[val.upper()]
+                elif field == "organization" and isinstance(val, dict):
+                    val = organization_model.create(val)
+                setattr(item, field, val)
 
         return item
