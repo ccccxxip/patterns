@@ -1,14 +1,13 @@
 from Src.Core.abstract_manager import abstract_manager
-from Src.Core.validator import validator
+from Src.Core.validator import validator, operation_exception
 from Src.Logics.settings_manager import settings_manager
+from Src.Logics.reference_index import reference_index
 
 from Src.Models.warehouse_model import warehouse_model
 from Src.Models.nomenclature_group_model import nomenclature_group_model
 from Src.Models.unit_model import unit_model
 from Src.Models.nomenclature_model import nomenclature_model
 from Src.Models.recipe_model import recipe_model
-
-from Src.Core.validator import validator, operation_exception
 
 
 class storage_manager(abstract_manager):
@@ -41,6 +40,7 @@ class storage_manager(abstract_manager):
                 "nomenclature": [],
                 "recipe": []
             }
+            self.__ref_index = reference_index()
 
     def load(self, file_name: str = "") -> None:
         """
@@ -120,7 +120,14 @@ class storage_manager(abstract_manager):
             # Отключаем флаг, чтобы не дублировать данные при следующих запусках
             set_mgr.settings.is_first_start = False
 
+        self.rebuild_index()
         return True
+
+    def rebuild_index(self) -> None:
+        """Перестроить обратный индекс ссылочной целостности"""
+        if not hasattr(self, "_storage_manager__ref_index") or self.__ref_index is None:
+            self.__ref_index = reference_index()
+        self.__ref_index.build(self.__data)
 
     def add(self, key: str, item) -> None:
         """
@@ -193,52 +200,17 @@ class storage_manager(abstract_manager):
 
     def check_relations(self, entity_type: str, item_id: str) -> list:
         """
-        Проверяет ссылочную целостность: находит все сущности, которые ссылаются на данный объект
+        Проверяет ссылочную целостность через обратный индекс
         Возвращает список текстовых описаний найденных связей
         """
         if not self.is_loaded:
             self.load()
 
-        k = self.normalize_key(entity_type)
-        target_id = str(item_id).strip()
-        relations = []
+        if not hasattr(self, "_storage_manager__ref_index") or self.__ref_index is None:
+            self.__ref_index = reference_index()
+            self.rebuild_index()
 
-        # Проверка единицы измерения
-        if k == "unit":
-            for u in self.units:
-                if u.base_unit and str(u.base_unit.id) == target_id and str(u.id) != target_id:
-                    relations.append(f"Единица измерения '{u.name}' использует её как базовую единицу")
-            for n in self.nomenclatures:
-                if n.unit and str(n.unit.id) == target_id:
-                    relations.append(f"Номенклатура '{n.name}' использует эту единицу измерения")
-            for r in self.recipes:
-                for ing in getattr(r, "ingredients", []):
-                    if ing.unit and str(ing.unit.id) == target_id:
-                        relations.append(f"Рецепт '{r.name}' использует эту единицу измерения в ингредиенте '{ing.name}'")
-
-        # Проверка группы номенклатуры
-        elif k == "group":
-            for n in self.nomenclatures:
-                if n.group and str(n.group.id) == target_id:
-                    relations.append(f"Номенклатура '{n.name}' входит в эту группу")
-
-        # Проверка номенклатуры
-        elif k == "nomenclature":
-            for r in self.recipes:
-                if r.owner and str(r.owner.id) == target_id:
-                    relations.append(f"Рецепт '{r.name}' привязан к этой номенклатуре как владелец")
-                for ing in getattr(r, "ingredients", []):
-                    if ing.nomenclature and str(ing.nomenclature.id) == target_id:
-                        relations.append(f"Рецепт '{r.name}' использует эту номенклатуру в ингредиенте '{ing.name}'")
-
-        # Проверка рецепта
-        elif k == "recipe":
-            for r in self.recipes:
-                for ing in getattr(r, "ingredients", []):
-                    if getattr(ing, "recipe", None) and str(ing.recipe.id) == target_id and str(r.id) != target_id:
-                        relations.append(f"Рецепт '{r.name}' включает этот рецепт как полуфабрикат")
-
-        return relations
+        return self.__ref_index.get_relations(item_id)
 
     def add_entity(self, entity_type: str, item) -> object:
         """
@@ -258,6 +230,7 @@ class storage_manager(abstract_manager):
                     raise operation_exception(f"Сущность типа '{k}' с id '{item_id}' уже существует")
 
         self.add(k, item)
+        self.rebuild_index()
         return item
 
     def delete_entity(self, entity_type: str, item_id: str) -> bool:
@@ -284,6 +257,7 @@ class storage_manager(abstract_manager):
             )
 
         self.__data[k].remove(existing)
+        self.rebuild_index()
         return True
 
     def update_entity(self, entity_type: str, item_id: str, new_item) -> object:
@@ -314,4 +288,5 @@ class storage_manager(abstract_manager):
         # Заменяем старый объект на новый
         idx = self.__data[k].index(existing)
         self.__data[k][idx] = new_item
+        self.rebuild_index()
         return new_item

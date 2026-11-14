@@ -69,32 +69,19 @@ class settings_manager(abstract_manager):
         if not self.__data:
             return False
 
-        from Src.Dtos.settings_dto import settings_dto
         from Src.Logics.mapping_factory import mapping_factory
 
-        success = True
         try:
-            dto = settings_dto.from_dict(self.__data)
-            if dto is None:
-                return False
-
-            # Проверка корректности блока организации
-            if "organization" in self.__data:
-                if dto.organization is None:
-                    success = False
-
             factory = mapping_factory()
-            model = factory.to_model(dto)
+            model = factory.deserialize("settings", self.__data)
             if model is not None:
                 self.__settings = model
 
-            # Проверка корректности формата вывода отчетов
-            if "response_format" in self.__data:
-                raw_format = self.__data["response_format"]
-                if not isinstance(raw_format, str) or raw_format.upper() not in report_type_enum.__members__:
-                    success = False
+            # Если блок organization был передан в JSON, но не распарсился
+            if "organization" in self.__data and self.__data["organization"] is not None and model.organization is None:
+                return False
 
-            return success
+            return True
         except Exception:
             return False
     @property  
