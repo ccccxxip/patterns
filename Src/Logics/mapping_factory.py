@@ -5,6 +5,7 @@
 import json
 from typing import Dict, Type
 from Src.Core.exception import arguments_exception
+from Src.Core.validator import operation_exception
 from Src.Core.nomenclature_type import nomenclature_type
 from Src.Core.abstract_mapping_factory import abstract_mapping_factory
 from Src.Models.warehouse_model import warehouse_model
@@ -21,6 +22,11 @@ from Src.Dtos.ingredient_dto import ingredient_dto
 from Src.Dtos.recipe_dto import recipe_dto
 from Src.Dtos.storage_dto import storage_dto
 from Src.Logics.identity_cache import identity_cache
+
+from Src.Models.organization_model import organization_model
+from Src.Models.settings_model import settings_model
+from Src.Dtos.organization_dto import organization_dto
+from Src.Dtos.settings_dto import settings_dto
 
 
 class mapping_factory(abstract_mapping_factory):
@@ -41,7 +47,45 @@ class mapping_factory(abstract_mapping_factory):
             nomenclature_dto:       nomenclature_model,
             ingredient_dto:         ingredient_model,
             recipe_dto:             recipe_model,
+            organization_dto:       organization_model,
+            settings_dto:           settings_model,
         }
+
+        # Таблица соответствия строкового имени сущности и класса DTO
+        self.__dto_mapping: Dict[str, Type] = {
+            "warehouse":    warehouse_dto,
+            "unit":         unit_dto,
+            "group":        nomenclature_group_dto,
+            "nomenclature": nomenclature_dto,
+            "ingredient":   ingredient_dto,
+            "recipe":       recipe_dto,
+            "organization": organization_dto,
+            "settings":     settings_dto,
+        }
+
+    def get_dto_class(self, entity_type: str) -> Type:
+        """Получить класс DTO по строковому имени типа сущности"""
+        if not entity_type or not isinstance(entity_type, str):
+            return None
+        return self.__dto_mapping.get(entity_type.strip().lower())
+
+    def deserialize(self, entity_type: str, data: dict, use_cache: bool = False) -> object:
+        """
+        Единая точка десериализации словаря в доменную модель
+        Находит DTO, вызывает from_dict и преобразует в доменную модель
+        """
+        if not isinstance(data, dict):
+            raise arguments_exception("data", "Данные для десериализации должны быть словарем")
+
+        dto_cls = self.get_dto_class(entity_type)
+        if dto_cls is None:
+            raise arguments_exception("entity_type", f"Не найден DTO для типа сущности '{entity_type}'")
+
+        dto = dto_cls.from_dict(data)
+        if dto is None:
+            raise operation_exception(f"Некорректные данные для сущности '{entity_type}'")
+
+        return self.to_model(dto, use_cache=use_cache)
 
     @property
     def cache(self) -> identity_cache:
@@ -56,7 +100,7 @@ class mapping_factory(abstract_mapping_factory):
                 return item
         return nomenclature_type.PRODUCT
 
-    def to_model(self, source: object) -> object:
+    def to_model(self, source: object, use_cache: bool = True) -> object:
         """
         Универсальный метод преобразования DTO в доменную модель
         Определяет тип DTO по таблице __mapping и создаёт модель через рефлексию
@@ -77,16 +121,20 @@ class mapping_factory(abstract_mapping_factory):
 
         # Проверяем кэш идентичности по ID
         source_id = getattr(source, "id", None)
-        if source_id:
+        if use_cache and source_id:
             cached = self._cache.get(source_id, domain_cls.__name__)
             if cached is not None:
                 return cached
 
         # Динамически извлекаем поля DTO через рефлексию
+        from Src.Core.common import common
+
+        prop_fields = common.get_fields(source)
+        fields = prop_fields if prop_fields else [k for k in vars(source).keys() if not k.startswith("_")]
+
         data = {}
-        for field, value in vars(source).items():
-            if field.startswith("_"):
-                continue
+        for field in fields:
+            value = getattr(source, field, None)
             if type(value) in self.__mapping:
                 data[field] = self.to_model(value)
             elif isinstance(value, list):

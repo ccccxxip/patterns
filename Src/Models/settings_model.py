@@ -68,3 +68,31 @@ class settings_model(base_model):
         """Задаёт формат вывода отчётов по умолчанию"""
         validator.validate(value, report_type_enum, field_name="response_format")
         self.__response_format = value
+
+    @classmethod
+    def create(cls, data: dict) -> "settings_model":
+        """Фабричный метод создания модели настроек из словаря"""
+        if not isinstance(data, dict):
+            return cls()
+
+        item = cls()
+
+        if "organization" in data and data["organization"] is not None:
+            item.organization = data["organization"]
+
+        if "boss_name" in data and data["boss_name"] is not None:
+            item.boss_name = str(data["boss_name"])
+
+        if "account_name" in data and data["account_name"] is not None:
+            item.account_name = str(data["account_name"])
+
+        if "is_first_start" in data and data["is_first_start"] is not None:
+            item.is_first_start = bool(data["is_first_start"])
+
+        if "response_format" in data and data["response_format"] is not None:
+            rf = data["response_format"]
+            if isinstance(rf, str):
+                rf = report_type_enum[rf.upper()]
+            item.response_format = rf
+
+        return item

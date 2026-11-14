@@ -1,6 +1,7 @@
 from Src.Core.abstract_manager import abstract_manager
-from Src.Core.validator import validator
+from Src.Core.validator import validator, operation_exception
 from Src.Logics.settings_manager import settings_manager
+from Src.Logics.reference_index import reference_index
 
 from Src.Models.warehouse_model import warehouse_model
 from Src.Models.nomenclature_group_model import nomenclature_group_model
@@ -39,6 +40,7 @@ class storage_manager(abstract_manager):
                 "nomenclature": [],
                 "recipe": []
             }
+            self.__ref_index = reference_index()
 
     def load(self, file_name: str = "") -> None:
         """
@@ -118,7 +120,14 @@ class storage_manager(abstract_manager):
             # Отключаем флаг, чтобы не дублировать данные при следующих запусках
             set_mgr.settings.is_first_start = False
 
+        self.rebuild_index()
         return True
+
+    def rebuild_index(self) -> None:
+        """Перестроить обратный индекс ссылочной целостности"""
+        if not hasattr(self, "_storage_manager__ref_index") or self.__ref_index is None:
+            self.__ref_index = reference_index()
+        self.__ref_index.build(self.__data)
 
     def add(self, key: str, item) -> None:
         """
@@ -159,26 +168,125 @@ class storage_manager(abstract_manager):
     def recipes(self) -> list:
         return self.__data["recipe"]
         
+    @staticmethod
+    def normalize_key(key: str) -> str:
+        """Приводит ключ сущности к стандартному виду (убирает _model, суффиксы и тд)"""
+        k = str(key).lower().strip().replace("_model", "")
+        aliases = {
+            "warehouses": "warehouse",
+            "units": "unit",
+            "groups": "group",
+            "nomenclatures": "nomenclature",
+            "recipes": "recipe",
+        }
+        return aliases.get(k, k)
+
+    def get_entities_by_type(self, entity_type: str) -> list:
+        """Возвращает список всех сущностей указанного типа"""
+        if not self.is_loaded:
+            self.load()
+        k = self.normalize_key(entity_type)
+        return self.__data.get(k, [])
+
     def get_entity(self, entity_type: str, entity_id: str):
+        """Ищет сущность по типу и id (или имени)"""
+        items = self.get_entities_by_type(entity_type)
+        target = str(entity_id).strip()
+        for item in items:
+            owner_name = getattr(item, "owner", None) and getattr(item.owner, "name", None)
+            if getattr(item, "id", None) == target or getattr(item, "name", None) == target or owner_name == target:
+                return item
+        return None
+
+    def check_relations(self, entity_type: str, item_id: str) -> list:
         """
-        Ищет сущность в хранилище по типу и идентификатору (или наименованию).
-        Метод инкапсулирует логику доступа к данным в storage_manager
+        Проверяет ссылочную целостность через обратный индекс
+        Возвращает список текстовых описаний найденных связей
         """
         if not self.is_loaded:
             self.load()
 
-        type_map = {
-            "nomenclature": self.nomenclatures,
-            "unit": self.units,
-            "recipe": self.recipes,
-        }
+        if not hasattr(self, "_storage_manager__ref_index") or self.__ref_index is None:
+            self.__ref_index = reference_index()
+            self.rebuild_index()
 
-        items = type_map.get(entity_type)
-        if items is None:
-            return None
+        return self.__ref_index.get_relations(item_id)
 
-        for item in items:
-            owner_name = getattr(item, "owner", None) and getattr(item.owner, "name", None)
-            if item.id == entity_id or item.name == entity_id or owner_name == entity_id:
-                return item
-        return None
+    def add_entity(self, entity_type: str, item) -> object:
+        """
+        Добавляет доменную сущность с проверкой уникальности id
+        """
+        if not self.is_loaded:
+            self.load()
+
+        k = self.normalize_key(entity_type)
+        if k not in self.__data:
+            raise operation_exception(f"Неизвестный тип сущности: '{entity_type}'")
+
+        item_id = getattr(item, "id", None)
+        if item_id:
+            for existing in self.__data[k]:
+                if getattr(existing, "id", None) == item_id:
+                    raise operation_exception(f"Сущность типа '{k}' с id '{item_id}' уже существует")
+
+        self.add(k, item)
+        self.rebuild_index()
+        return item
+
+    def delete_entity(self, entity_type: str, item_id: str) -> bool:
+        """
+        Удаляет доменную сущность с контролем ссылочной целостности
+        """
+        if not self.is_loaded:
+            self.load()
+
+        k = self.normalize_key(entity_type)
+        if k not in self.__data:
+            raise operation_exception(f"Неизвестный тип сущности: '{entity_type}'")
+
+        existing = self.get_entity(k, item_id)
+        if existing is None:
+            raise operation_exception(f"Сущность типа '{k}' с id '{item_id}' не найдена")
+
+        # Контроль связей: запрещено удалять, если есть зависимости
+        relations = self.check_relations(k, existing.id)
+        if relations:
+            reasons = "; ".join(relations)
+            raise operation_exception(
+                f"Запрещено удалять сущность '{k}' с id '{item_id}', так как она связана с другими объектами: {reasons}"
+            )
+
+        self.__data[k].remove(existing)
+        self.rebuild_index()
+        return True
+
+    def update_entity(self, entity_type: str, item_id: str, new_item) -> object:
+        """
+        Обновляет сущность. Если изменяется уникальный код (id), проверяет отсутствие связе
+        """
+        if not self.is_loaded:
+            self.load()
+
+        k = self.normalize_key(entity_type)
+        if k not in self.__data:
+            raise operation_exception(f"Неизвестный тип сущности: '{entity_type}'")
+
+        existing = self.get_entity(k, item_id)
+        if existing is None:
+            raise operation_exception(f"Сущность типа '{k}' с id '{item_id}' не найдена")
+
+        new_id = getattr(new_item, "id", item_id)
+        # Если пытаются изменить ID сущности
+        if new_id != item_id:
+            relations = self.check_relations(k, item_id)
+            if relations:
+                reasons = "; ".join(relations)
+                raise operation_exception(
+                    f"Запрещено изменять код (id) сущности '{item_id}', так как она связана с другими объектами: {reasons}"
+                )
+
+        # Заменяем старый объект на новый
+        idx = self.__data[k].index(existing)
+        self.__data[k][idx] = new_item
+        self.rebuild_index()
+        return new_item
