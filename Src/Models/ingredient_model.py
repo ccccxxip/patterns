@@ -138,23 +138,37 @@ class ingredient_model(base_model):
 
         self._gross_weight = float(value)
 
-    @staticmethod
-    def create(nomenclature: nomenclature_model, net_quantity: float, gross_quantity: float) -> "ingredient_model":
+    @classmethod
+    def create(cls, *args, **kwargs) -> "ingredient_model":
         """
-        Фабричный метод: ингредиент по количеству в единице измерения номенклатуры
-
-        Количество переводится в базовую единицу через unit.to_base(),
-        например 0.15 л сливок становится 150 мл
-
-        nomenclature: Номенклатура
-        net_quantity: Нетто в единице номенклатуры
-        gross_quantity: Брутто в единице номенклатуры
+        Фабричный метод создания ингредиента
+        Поддерживает:
+        create(data: dict, nomenclature, unit, recipe=None) - при десериализации
+        create(nomenclature, net_quantity, gross_quantity) - при сборке рецептов
         """
+        # Создание из словаря данных (десериализация)
+        if args and isinstance(args[0], dict):
+            data = args[0]
+            nomenclature = kwargs.get("nomenclature") or data.get("nomenclature")
+            unit = kwargs.get("unit") or data.get("unit")
+            recipe = kwargs.get("recipe") or data.get("recipe")
+            net_weight = float(data.get("net_weight", 0.0))
+            gross_weight = float(data.get("gross_weight", 0.0))
+            item = cls(nomenclature, net_weight, gross_weight, unit, recipe)
+            if data.get("id"):
+                item.id = data["id"]
+            return item
+
+        # Стандартное создание по номенклатуре и весам в рецепте
+        nomenclature = args[0] if len(args) > 0 else kwargs.get("nomenclature")
+        net_quantity = args[1] if len(args) > 1 else kwargs.get("net_quantity")
+        gross_quantity = args[2] if len(args) > 2 else kwargs.get("gross_quantity")
+
         if not isinstance(nomenclature, nomenclature_model):
             raise arguments_exception("nomenclature", "Номенклатура должна быть объектом nomenclature_model")
 
         unit = nomenclature.unit
-        return ingredient_model(
+        return cls(
             nomenclature,
             unit.to_base(net_quantity),
             unit.to_base(gross_quantity),

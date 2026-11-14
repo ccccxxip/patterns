@@ -20,7 +20,9 @@ class reference_convertor(abstract_convertor):
         """
         return [
             attr for attr in dir(base_model)
-            if not attr.startswith("_") and isinstance(getattr(base_model, attr, None), property)
+            if not attr.startswith("_") 
+            and isinstance(getattr(base_model, attr, None), property)
+            and attr != "type"
         ]
 
     def _create_reference(self, item: base_model) -> dict:

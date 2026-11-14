@@ -65,6 +65,11 @@ class base_model(ABC):
             )
 
         self._name = normalized_value
+    
+    @property
+    def type(self) -> str:
+        """Полное название класса модели"""
+        return f"{self.__class__.__module__}.{self.__class__.__qualname__}"
 
     def __eq__(self, other: object) -> bool:
         """ Проверяет равенство объектов по их уникальному идентификатору """

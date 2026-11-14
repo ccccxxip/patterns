@@ -174,3 +174,27 @@ class recipe_model(base_model):
         recipe.add_ingredient(ingredient_model(box, 0, 20, gram))
 
         return recipe
+
+    @classmethod
+    def create(cls, data: dict, owner: nomenclature_model = None) -> "recipe_model":
+        """
+        Фабричный метод создания рецепта из словаря данных
+        """
+        if not isinstance(data, dict):
+            raise arguments_exception("data", "Ожидался словарь данных")
+
+        owner_val = owner if owner is not None else data.get("owner")
+        name = data.get("name", "")
+        prep_method = data.get("preparation_method", "")
+        portions = int(data.get("portions", 1))
+        item = cls(name=name, owner=owner_val, preparation_method=prep_method, portions=portions)
+
+        if data.get("id"):
+            item.id = data["id"]
+
+        # Если в словаре есть список ингредиентов — добавляем их в рецепт
+        for ing in data.get("ingredients", []):
+            if isinstance(ing, ingredient_model) and ing not in item.ingredients:
+                item.add_ingredient(ing)
+
+        return item

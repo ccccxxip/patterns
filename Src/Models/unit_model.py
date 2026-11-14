@@ -113,3 +113,22 @@ class unit_model(base_model):
     def create_teaspoon(gram: "unit_model" = None) -> "unit_model":
         """ Фабричный метод: чайная ложка соли (7 г) """
         return unit_model("Чайная ложка (ч.л.)", 7.0, gram if gram is not None else unit_model.create_gram())
+    
+
+    @classmethod
+    def create(cls, data: dict, base_unit: "unit_model" = None) -> "unit_model":
+        """
+        Фабричный метод создания единицы измерения из словаря данных
+        """
+        if not isinstance(data, dict):
+            raise arguments_exception("data", "Ожидался словарь данных")
+
+        name = data.get("name", "")
+        ratio = float(data.get("ratio", 1.0))
+        base = base_unit if base_unit is not None else data.get("base_unit")
+        item = cls(name=name, ratio=ratio, base_unit=base)
+
+        if data.get("id"):
+            item.id = data["id"]
+
+        return item

@@ -1,4 +1,5 @@
 from Src.Core.base_model import base_model
+from Src.Core.exception import arguments_exception
 
 
 class nomenclature_group_model(base_model):
@@ -52,3 +53,19 @@ class nomenclature_group_model(base_model):
         Сюда сохраняются финальные блюда (Паста)
         """
         return nomenclature_group_model("Готовая продукция")
+    
+    @classmethod
+    def create(cls, data: dict) -> "nomenclature_group_model":
+        """
+        Фабричный метод создания группы номенклатуры из словаря данных
+        """
+        if not isinstance(data, dict):
+            raise arguments_exception("data", "Ожидался словарь данных")
+
+        name = data.get("name", "")
+        item = cls(name=name)
+
+        if data.get("id"):
+            item.id = data["id"]
+
+        return item
