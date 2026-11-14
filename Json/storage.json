@@ -2,26 +2,26 @@
     "warehouse": [
         {
             "address": "ул. Гагарина, д. 101",
-            "id": "74b191ba-ec4e-4eb0-be52-9d853ea635e6",
+            "id": "909ac8cc-afc5-4ef6-b7ab-47bbfa2c8c67",
             "name": "Основной склад",
             "type": "Src.Models.warehouse_model.warehouse_model"
         }
     ],
     "unit": [
         {
-            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
             "name": "Грамм (г)",
             "ratio": 1.0,
             "type": "Src.Models.unit_model.unit_model",
             "base_unit": null
         },
         {
-            "id": "07dab389-992a-4bb6-9e6d-08af71243568",
+            "id": "c33080d3-9d52-44cf-9197-f7232f1b47e7",
             "name": "Килограмм (кг)",
             "ratio": 1000.0,
             "type": "Src.Models.unit_model.unit_model",
             "base_unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -29,12 +29,12 @@
             }
         },
         {
-            "id": "539b31bd-98d5-4ee8-a262-e66c7ee30f46",
+            "id": "15cb0d2e-cfab-48f0-a306-3cfceb55eecf",
             "name": "Чайная ложка (ч.л.)",
             "ratio": 7.0,
             "type": "Src.Models.unit_model.unit_model",
             "base_unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -42,19 +42,19 @@
             }
         },
         {
-            "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+            "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
             "name": "Миллилитр (мл)",
             "ratio": 1.0,
             "type": "Src.Models.unit_model.unit_model",
             "base_unit": null
         },
         {
-            "id": "166a0a79-dee3-4451-81f5-ec5fa6c1e532",
+            "id": "60b4b299-0034-4fa4-b04b-decd2e5960b0",
             "name": "Литр (л)",
             "ratio": 1000.0,
             "type": "Src.Models.unit_model.unit_model",
             "base_unit": {
-                "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                 "name": "Миллилитр (мл)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -62,12 +62,12 @@
             }
         },
         {
-            "id": "a884ffcd-90b8-40c1-972c-f35eae949453",
+            "id": "ba9ee02c-8858-420a-abba-330c254ecf06",
             "name": "Столовая ложка (ст.л.)",
             "ratio": 15.0,
             "type": "Src.Models.unit_model.unit_model",
             "base_unit": {
-                "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                 "name": "Миллилитр (мл)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -75,7 +75,7 @@
             }
         },
         {
-            "id": "48ec0780-7488-430c-84f9-7d59eafe5579",
+            "id": "6ee118f6-f202-4372-b7bf-433daa8ea1e3",
             "name": "Штука (шт)",
             "ratio": 1.0,
             "type": "Src.Models.unit_model.unit_model",
@@ -84,27 +84,27 @@
     ],
     "group": [
         {
-            "id": "ad2c456b-a3db-45cd-9a40-41ab18fc664a",
+            "id": "2ed91a8e-2156-4619-8861-90432db2e9a2",
             "name": "Ингредиенты",
             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
         },
         {
-            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
             "name": "Сырье",
             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
         },
         {
-            "id": "edd12cff-8c28-42c0-99a1-023526ba473f",
+            "id": "272ed4d3-f439-46cd-b79c-68838a1689e8",
             "name": "Полуфабрикаты",
             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
         },
         {
-            "id": "02de4bfc-53d7-4e37-af50-fd0b4770630b",
+            "id": "5559e940-c9c2-48f8-bfe3-12c44d1981b0",
             "name": "Упаковка",
             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
         },
         {
-            "id": "62a5514d-f7f8-402c-b7fb-db1fc906d31d",
+            "id": "95b3c95c-c8f2-4606-815c-b9d06761cdef",
             "name": "Готовая продукция",
             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
         }
@@ -112,21 +112,21 @@
     "nomenclature": [
         {
             "full_name": "Мука пшеничная высший сорт",
-            "id": "abb55717-7f0b-463f-bb14-0c6cb6152412",
+            "id": "5d048402-e2f7-46a7-9d1c-5a0637973f1f",
             "name": "Мука",
             "group": {
-                "id": "ad2c456b-a3db-45cd-9a40-41ab18fc664a",
+                "id": "2ed91a8e-2156-4619-8861-90432db2e9a2",
                 "name": "Ингредиенты",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "07dab389-992a-4bb6-9e6d-08af71243568",
+                "id": "c33080d3-9d52-44cf-9197-f7232f1b47e7",
                 "name": "Килограмм (кг)",
                 "ratio": 1000.0,
                 "type": "Src.Models.unit_model.unit_model",
                 "base_unit": {
-                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                     "name": "Грамм (г)",
                     "ratio": 1.0,
                     "type": "Src.Models.unit_model.unit_model",
@@ -136,21 +136,21 @@
         },
         {
             "full_name": "Сахар-песок белый",
-            "id": "2f10aae4-e00e-4774-afd8-ca1d566bce0f",
+            "id": "6a6016be-a6ba-49ca-b6ab-f1d994043050",
             "name": "Сахар",
             "group": {
-                "id": "ad2c456b-a3db-45cd-9a40-41ab18fc664a",
+                "id": "2ed91a8e-2156-4619-8861-90432db2e9a2",
                 "name": "Ингредиенты",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "07dab389-992a-4bb6-9e6d-08af71243568",
+                "id": "c33080d3-9d52-44cf-9197-f7232f1b47e7",
                 "name": "Килограмм (кг)",
                 "ratio": 1000.0,
                 "type": "Src.Models.unit_model.unit_model",
                 "base_unit": {
-                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                     "name": "Грамм (г)",
                     "ratio": 1.0,
                     "type": "Src.Models.unit_model.unit_model",
@@ -160,16 +160,16 @@
         },
         {
             "full_name": "Куриное филе охл.",
-            "id": "6cac768f-69e0-4c93-a197-e0bfed907c08",
+            "id": "578efc7a-d657-4966-bfff-36074f248d36",
             "name": "Куриное филе",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -178,16 +178,16 @@
         },
         {
             "full_name": "Шампиньоны свежие",
-            "id": "7c905286-b4c8-47d9-9159-e83efae2f8ea",
+            "id": "42a1562d-741e-4c2a-93f9-a9f82d3eabef",
             "name": "Шампиньоны свежие",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -196,21 +196,21 @@
         },
         {
             "full_name": "Сливки 20%",
-            "id": "a525ce2f-1dea-4a2b-bd49-ee288f4fe097",
+            "id": "ea95b9ab-fab5-4bb8-a1bd-7b10271badb2",
             "name": "Сливки 20%",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "166a0a79-dee3-4451-81f5-ec5fa6c1e532",
+                "id": "60b4b299-0034-4fa4-b04b-decd2e5960b0",
                 "name": "Литр (л)",
                 "ratio": 1000.0,
                 "type": "Src.Models.unit_model.unit_model",
                 "base_unit": {
-                    "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                    "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                     "name": "Миллилитр (мл)",
                     "ratio": 1.0,
                     "type": "Src.Models.unit_model.unit_model",
@@ -220,21 +220,21 @@
         },
         {
             "full_name": "Масло растительное",
-            "id": "a7f11808-62f1-4383-8f24-c76e4150a398",
+            "id": "65175168-c0f7-4404-b23f-36216d22575d",
             "name": "Масло растительное",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "a884ffcd-90b8-40c1-972c-f35eae949453",
+                "id": "ba9ee02c-8858-420a-abba-330c254ecf06",
                 "name": "Столовая ложка (ст.л.)",
                 "ratio": 15.0,
                 "type": "Src.Models.unit_model.unit_model",
                 "base_unit": {
-                    "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                    "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                     "name": "Миллилитр (мл)",
                     "ratio": 1.0,
                     "type": "Src.Models.unit_model.unit_model",
@@ -244,16 +244,16 @@
         },
         {
             "full_name": "Чеснок",
-            "id": "f534fa08-15f8-44ec-ab90-683747b3c319",
+            "id": "61099f50-9bfe-460a-ad94-22c048bc56d7",
             "name": "Чеснок",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -262,21 +262,21 @@
         },
         {
             "full_name": "Соль пищевая",
-            "id": "cbba5397-afab-479a-93ff-8579f826eff7",
+            "id": "37a02c9a-dfeb-4280-94bf-8658f8d7b1b3",
             "name": "Соль",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "539b31bd-98d5-4ee8-a262-e66c7ee30f46",
+                "id": "15cb0d2e-cfab-48f0-a306-3cfceb55eecf",
                 "name": "Чайная ложка (ч.л.)",
                 "ratio": 7.0,
                 "type": "Src.Models.unit_model.unit_model",
                 "base_unit": {
-                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                     "name": "Грамм (г)",
                     "ratio": 1.0,
                     "type": "Src.Models.unit_model.unit_model",
@@ -286,16 +286,16 @@
         },
         {
             "full_name": "Паста (феттуччине)",
-            "id": "836f2469-c6f6-4a2b-a40e-a3cd4545646f",
+            "id": "62ed2384-abf0-4540-aec1-706e5ed0599c",
             "name": "Паста (феттуччине)",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -304,16 +304,16 @@
         },
         {
             "full_name": "Сыр Пармезан",
-            "id": "04c683be-9a1e-4b99-bca9-541b75193580",
+            "id": "134976ef-ebf2-492f-b2d8-f9487831affe",
             "name": "Сыр Пармезан",
             "group": {
-                "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                 "name": "Сырье",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -322,16 +322,16 @@
         },
         {
             "full_name": "Сливочно-грибной соус (п/ф)",
-            "id": "6ede64f0-8f2e-4e7c-ad22-0f371160ca04",
+            "id": "ab72db33-23ed-4566-8ff7-3ddd5e6369a9",
             "name": "Сливочно-грибной соус",
             "group": {
-                "id": "edd12cff-8c28-42c0-99a1-023526ba473f",
+                "id": "272ed4d3-f439-46cd-b79c-68838a1689e8",
                 "name": "Полуфабрикаты",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Полуфабрикат",
             "unit": {
-                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                 "name": "Грамм (г)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -340,16 +340,16 @@
         },
         {
             "full_name": "Контейнер крафтовый",
-            "id": "492be0c1-69db-467a-8dfd-e48c5771d1b3",
+            "id": "c05e50b3-c405-4f1b-bae6-20a6b53bb307",
             "name": "Контейнер крафтовый",
             "group": {
-                "id": "02de4bfc-53d7-4e37-af50-fd0b4770630b",
+                "id": "5559e940-c9c2-48f8-bfe3-12c44d1981b0",
                 "name": "Упаковка",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Упаковка",
             "unit": {
-                "id": "48ec0780-7488-430c-84f9-7d59eafe5579",
+                "id": "6ee118f6-f202-4372-b7bf-433daa8ea1e3",
                 "name": "Штука (шт)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -358,16 +358,16 @@
         },
         {
             "full_name": "Паста сливочная с курицей",
-            "id": "374281e1-ffaa-4955-8054-fbdfd6d10f6a",
+            "id": "579605df-f727-4f44-93d5-733e4b94625f",
             "name": "Паста сливочная с курицей",
             "group": {
-                "id": "62a5514d-f7f8-402c-b7fb-db1fc906d31d",
+                "id": "95b3c95c-c8f2-4606-815c-b9d06761cdef",
                 "name": "Готовая продукция",
                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
             },
             "type": "Продукт",
             "unit": {
-                "id": "48ec0780-7488-430c-84f9-7d59eafe5579",
+                "id": "6ee118f6-f202-4372-b7bf-433daa8ea1e3",
                 "name": "Штука (шт)",
                 "ratio": 1.0,
                 "type": "Src.Models.unit_model.unit_model",
@@ -377,7 +377,7 @@
     ],
     "recipe": [
         {
-            "id": "78da86a3-b5ed-4785-b9e6-7257565c110c",
+            "id": "8d5534b4-e8a6-4286-8f34-b854d358567c",
             "name": "Приготовление соуса",
             "portions": 2,
             "preparation_method": "Обжарить чеснок, курицу и шампиньоны, добавить сливки и соль, тушить 3-4 минуты",
@@ -387,22 +387,22 @@
             "ingredients": [
                 {
                     "gross_weight": 160.0,
-                    "id": "b71d8f07-3936-4053-b75f-15317273977c",
+                    "id": "aaf0e540-3632-4348-b947-4e1ab8874f84",
                     "name": "Куриное филе",
                     "net_weight": 150.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Куриное филе охл.",
-                        "id": "6cac768f-69e0-4c93-a197-e0bfed907c08",
+                        "id": "578efc7a-d657-4966-bfff-36074f248d36",
                         "name": "Куриное филе",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                             "name": "Грамм (г)",
                             "ratio": 1.0,
                             "type": "Src.Models.unit_model.unit_model",
@@ -411,7 +411,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -420,22 +420,22 @@
                 },
                 {
                     "gross_weight": 110.0,
-                    "id": "6692e051-d98e-4d70-8fd6-f8f362e78ee0",
+                    "id": "ea68b073-56d5-4d0d-a6ca-f50350d42de3",
                     "name": "Шампиньоны свежие",
                     "net_weight": 100.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Шампиньоны свежие",
-                        "id": "7c905286-b4c8-47d9-9159-e83efae2f8ea",
+                        "id": "42a1562d-741e-4c2a-93f9-a9f82d3eabef",
                         "name": "Шампиньоны свежие",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                             "name": "Грамм (г)",
                             "ratio": 1.0,
                             "type": "Src.Models.unit_model.unit_model",
@@ -444,7 +444,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -453,27 +453,27 @@
                 },
                 {
                     "gross_weight": 150.0,
-                    "id": "a4b58a0c-7483-4aa3-8e51-cec5529a3b27",
+                    "id": "f970aea0-be2b-4579-9f18-1f832cffb82a",
                     "name": "Сливки 20%",
                     "net_weight": 150.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Сливки 20%",
-                        "id": "a525ce2f-1dea-4a2b-bd49-ee288f4fe097",
+                        "id": "ea95b9ab-fab5-4bb8-a1bd-7b10271badb2",
                         "name": "Сливки 20%",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "166a0a79-dee3-4451-81f5-ec5fa6c1e532",
+                            "id": "60b4b299-0034-4fa4-b04b-decd2e5960b0",
                             "name": "Литр (л)",
                             "ratio": 1000.0,
                             "type": "Src.Models.unit_model.unit_model",
                             "base_unit": {
-                                "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                                "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                                 "name": "Миллилитр (мл)",
                                 "ratio": 1.0,
                                 "type": "Src.Models.unit_model.unit_model",
@@ -483,7 +483,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                        "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                         "name": "Миллилитр (мл)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -492,27 +492,27 @@
                 },
                 {
                     "gross_weight": 30.0,
-                    "id": "8023f2c7-5fa5-47de-a4f4-5226f1d6c009",
+                    "id": "a3b7ca2c-2a90-40c0-91b4-bc6971b9e5c4",
                     "name": "Масло растительное",
                     "net_weight": 30.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Масло растительное",
-                        "id": "a7f11808-62f1-4383-8f24-c76e4150a398",
+                        "id": "65175168-c0f7-4404-b23f-36216d22575d",
                         "name": "Масло растительное",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "a884ffcd-90b8-40c1-972c-f35eae949453",
+                            "id": "ba9ee02c-8858-420a-abba-330c254ecf06",
                             "name": "Столовая ложка (ст.л.)",
                             "ratio": 15.0,
                             "type": "Src.Models.unit_model.unit_model",
                             "base_unit": {
-                                "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                                "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                                 "name": "Миллилитр (мл)",
                                 "ratio": 1.0,
                                 "type": "Src.Models.unit_model.unit_model",
@@ -522,7 +522,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                        "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                         "name": "Миллилитр (мл)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -531,22 +531,22 @@
                 },
                 {
                     "gross_weight": 7.0,
-                    "id": "8239c96c-d770-4fee-87d7-34b1ca2187e3",
+                    "id": "07297386-b193-461a-9384-97d935d0e2e2",
                     "name": "Чеснок",
                     "net_weight": 5.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Чеснок",
-                        "id": "f534fa08-15f8-44ec-ab90-683747b3c319",
+                        "id": "61099f50-9bfe-460a-ad94-22c048bc56d7",
                         "name": "Чеснок",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                             "name": "Грамм (г)",
                             "ratio": 1.0,
                             "type": "Src.Models.unit_model.unit_model",
@@ -555,7 +555,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -564,27 +564,27 @@
                 },
                 {
                     "gross_weight": 3.5,
-                    "id": "7e1d54db-cc19-4acb-9d9f-cf14771982b9",
+                    "id": "453d866f-ceec-4c8d-ae74-81af63078362",
                     "name": "Соль",
                     "net_weight": 3.5,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Соль пищевая",
-                        "id": "cbba5397-afab-479a-93ff-8579f826eff7",
+                        "id": "37a02c9a-dfeb-4280-94bf-8658f8d7b1b3",
                         "name": "Соль",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "539b31bd-98d5-4ee8-a262-e66c7ee30f46",
+                            "id": "15cb0d2e-cfab-48f0-a306-3cfceb55eecf",
                             "name": "Чайная ложка (ч.л.)",
                             "ratio": 7.0,
                             "type": "Src.Models.unit_model.unit_model",
                             "base_unit": {
-                                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                 "name": "Грамм (г)",
                                 "ratio": 1.0,
                                 "type": "Src.Models.unit_model.unit_model",
@@ -594,7 +594,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -604,16 +604,16 @@
             ],
             "owner": {
                 "full_name": "Сливочно-грибной соус (п/ф)",
-                "id": "6ede64f0-8f2e-4e7c-ad22-0f371160ca04",
+                "id": "ab72db33-23ed-4566-8ff7-3ddd5e6369a9",
                 "name": "Сливочно-грибной соус",
                 "group": {
-                    "id": "edd12cff-8c28-42c0-99a1-023526ba473f",
+                    "id": "272ed4d3-f439-46cd-b79c-68838a1689e8",
                     "name": "Полуфабрикаты",
                     "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                 },
                 "type": "Полуфабрикат",
                 "unit": {
-                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                     "name": "Грамм (г)",
                     "ratio": 1.0,
                     "type": "Src.Models.unit_model.unit_model",
@@ -622,7 +622,7 @@
             }
         },
         {
-            "id": "84138e8b-18e9-4b2b-89c8-351bb89c435c",
+            "id": "804b6c31-f36f-48e2-96e2-04726599a3ce",
             "name": "Сборка пасты",
             "portions": 1,
             "preparation_method": "Отварить пасту до состояния альденте, смешать с соусом, посыпать пармезаном, упаковать",
@@ -632,22 +632,22 @@
             "ingredients": [
                 {
                     "gross_weight": 100.0,
-                    "id": "6a5ffd0d-f57f-432f-8aa8-b1c800cccabe",
+                    "id": "92d25d73-90fd-4e75-9db7-3b4c6bb6bb11",
                     "name": "Паста (феттуччине)",
                     "net_weight": 100.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Паста (феттуччине)",
-                        "id": "836f2469-c6f6-4a2b-a40e-a3cd4545646f",
+                        "id": "62ed2384-abf0-4540-aec1-706e5ed0599c",
                         "name": "Паста (феттуччине)",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                             "name": "Грамм (г)",
                             "ratio": 1.0,
                             "type": "Src.Models.unit_model.unit_model",
@@ -656,7 +656,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -665,22 +665,22 @@
                 },
                 {
                     "gross_weight": 230.25,
-                    "id": "97ccfe78-7a96-47cd-b25c-eb87c8dfc03e",
+                    "id": "41ed6f8d-2392-4679-af56-f217833a3ecc",
                     "name": "Сливочно-грибной соус",
                     "net_weight": 219.25,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Сливочно-грибной соус (п/ф)",
-                        "id": "6ede64f0-8f2e-4e7c-ad22-0f371160ca04",
+                        "id": "ab72db33-23ed-4566-8ff7-3ddd5e6369a9",
                         "name": "Сливочно-грибной соус",
                         "group": {
-                            "id": "edd12cff-8c28-42c0-99a1-023526ba473f",
+                            "id": "272ed4d3-f439-46cd-b79c-68838a1689e8",
                             "name": "Полуфабрикаты",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Полуфабрикат",
                         "unit": {
-                            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                             "name": "Грамм (г)",
                             "ratio": 1.0,
                             "type": "Src.Models.unit_model.unit_model",
@@ -688,7 +688,7 @@
                         }
                     },
                     "recipe": {
-                        "id": "78da86a3-b5ed-4785-b9e6-7257565c110c",
+                        "id": "8d5534b4-e8a6-4286-8f34-b854d358567c",
                         "name": "Приготовление соуса",
                         "portions": 2,
                         "preparation_method": "Обжарить чеснок, курицу и шампиньоны, добавить сливки и соль, тушить 3-4 минуты",
@@ -698,22 +698,22 @@
                         "ingredients": [
                             {
                                 "gross_weight": 160.0,
-                                "id": "b71d8f07-3936-4053-b75f-15317273977c",
+                                "id": "aaf0e540-3632-4348-b947-4e1ab8874f84",
                                 "name": "Куриное филе",
                                 "net_weight": 150.0,
                                 "type": "Src.Models.ingredient_model.ingredient_model",
                                 "nomenclature": {
                                     "full_name": "Куриное филе охл.",
-                                    "id": "6cac768f-69e0-4c93-a197-e0bfed907c08",
+                                    "id": "578efc7a-d657-4966-bfff-36074f248d36",
                                     "name": "Куриное филе",
                                     "group": {
-                                        "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                                        "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                                         "name": "Сырье",
                                         "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                                     },
                                     "type": "Продукт",
                                     "unit": {
-                                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                         "name": "Грамм (г)",
                                         "ratio": 1.0,
                                         "type": "Src.Models.unit_model.unit_model",
@@ -722,7 +722,7 @@
                                 },
                                 "recipe": null,
                                 "unit": {
-                                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                     "name": "Грамм (г)",
                                     "ratio": 1.0,
                                     "type": "Src.Models.unit_model.unit_model",
@@ -731,22 +731,22 @@
                             },
                             {
                                 "gross_weight": 110.0,
-                                "id": "6692e051-d98e-4d70-8fd6-f8f362e78ee0",
+                                "id": "ea68b073-56d5-4d0d-a6ca-f50350d42de3",
                                 "name": "Шампиньоны свежие",
                                 "net_weight": 100.0,
                                 "type": "Src.Models.ingredient_model.ingredient_model",
                                 "nomenclature": {
                                     "full_name": "Шампиньоны свежие",
-                                    "id": "7c905286-b4c8-47d9-9159-e83efae2f8ea",
+                                    "id": "42a1562d-741e-4c2a-93f9-a9f82d3eabef",
                                     "name": "Шампиньоны свежие",
                                     "group": {
-                                        "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                                        "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                                         "name": "Сырье",
                                         "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                                     },
                                     "type": "Продукт",
                                     "unit": {
-                                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                         "name": "Грамм (г)",
                                         "ratio": 1.0,
                                         "type": "Src.Models.unit_model.unit_model",
@@ -755,7 +755,7 @@
                                 },
                                 "recipe": null,
                                 "unit": {
-                                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                     "name": "Грамм (г)",
                                     "ratio": 1.0,
                                     "type": "Src.Models.unit_model.unit_model",
@@ -764,27 +764,27 @@
                             },
                             {
                                 "gross_weight": 150.0,
-                                "id": "a4b58a0c-7483-4aa3-8e51-cec5529a3b27",
+                                "id": "f970aea0-be2b-4579-9f18-1f832cffb82a",
                                 "name": "Сливки 20%",
                                 "net_weight": 150.0,
                                 "type": "Src.Models.ingredient_model.ingredient_model",
                                 "nomenclature": {
                                     "full_name": "Сливки 20%",
-                                    "id": "a525ce2f-1dea-4a2b-bd49-ee288f4fe097",
+                                    "id": "ea95b9ab-fab5-4bb8-a1bd-7b10271badb2",
                                     "name": "Сливки 20%",
                                     "group": {
-                                        "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                                        "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                                         "name": "Сырье",
                                         "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                                     },
                                     "type": "Продукт",
                                     "unit": {
-                                        "id": "166a0a79-dee3-4451-81f5-ec5fa6c1e532",
+                                        "id": "60b4b299-0034-4fa4-b04b-decd2e5960b0",
                                         "name": "Литр (л)",
                                         "ratio": 1000.0,
                                         "type": "Src.Models.unit_model.unit_model",
                                         "base_unit": {
-                                            "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                                            "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                                             "name": "Миллилитр (мл)",
                                             "ratio": 1.0,
                                             "type": "Src.Models.unit_model.unit_model",
@@ -794,7 +794,7 @@
                                 },
                                 "recipe": null,
                                 "unit": {
-                                    "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                                    "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                                     "name": "Миллилитр (мл)",
                                     "ratio": 1.0,
                                     "type": "Src.Models.unit_model.unit_model",
@@ -803,27 +803,27 @@
                             },
                             {
                                 "gross_weight": 30.0,
-                                "id": "8023f2c7-5fa5-47de-a4f4-5226f1d6c009",
+                                "id": "a3b7ca2c-2a90-40c0-91b4-bc6971b9e5c4",
                                 "name": "Масло растительное",
                                 "net_weight": 30.0,
                                 "type": "Src.Models.ingredient_model.ingredient_model",
                                 "nomenclature": {
                                     "full_name": "Масло растительное",
-                                    "id": "a7f11808-62f1-4383-8f24-c76e4150a398",
+                                    "id": "65175168-c0f7-4404-b23f-36216d22575d",
                                     "name": "Масло растительное",
                                     "group": {
-                                        "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                                        "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                                         "name": "Сырье",
                                         "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                                     },
                                     "type": "Продукт",
                                     "unit": {
-                                        "id": "a884ffcd-90b8-40c1-972c-f35eae949453",
+                                        "id": "ba9ee02c-8858-420a-abba-330c254ecf06",
                                         "name": "Столовая ложка (ст.л.)",
                                         "ratio": 15.0,
                                         "type": "Src.Models.unit_model.unit_model",
                                         "base_unit": {
-                                            "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                                            "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                                             "name": "Миллилитр (мл)",
                                             "ratio": 1.0,
                                             "type": "Src.Models.unit_model.unit_model",
@@ -833,7 +833,7 @@
                                 },
                                 "recipe": null,
                                 "unit": {
-                                    "id": "518d037a-4c5b-4e05-910c-96fb8964b815",
+                                    "id": "aafffa5b-d107-496f-abd5-ebafeb447f3a",
                                     "name": "Миллилитр (мл)",
                                     "ratio": 1.0,
                                     "type": "Src.Models.unit_model.unit_model",
@@ -842,22 +842,22 @@
                             },
                             {
                                 "gross_weight": 7.0,
-                                "id": "8239c96c-d770-4fee-87d7-34b1ca2187e3",
+                                "id": "07297386-b193-461a-9384-97d935d0e2e2",
                                 "name": "Чеснок",
                                 "net_weight": 5.0,
                                 "type": "Src.Models.ingredient_model.ingredient_model",
                                 "nomenclature": {
                                     "full_name": "Чеснок",
-                                    "id": "f534fa08-15f8-44ec-ab90-683747b3c319",
+                                    "id": "61099f50-9bfe-460a-ad94-22c048bc56d7",
                                     "name": "Чеснок",
                                     "group": {
-                                        "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                                        "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                                         "name": "Сырье",
                                         "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                                     },
                                     "type": "Продукт",
                                     "unit": {
-                                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                         "name": "Грамм (г)",
                                         "ratio": 1.0,
                                         "type": "Src.Models.unit_model.unit_model",
@@ -866,7 +866,7 @@
                                 },
                                 "recipe": null,
                                 "unit": {
-                                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                     "name": "Грамм (г)",
                                     "ratio": 1.0,
                                     "type": "Src.Models.unit_model.unit_model",
@@ -875,27 +875,27 @@
                             },
                             {
                                 "gross_weight": 3.5,
-                                "id": "7e1d54db-cc19-4acb-9d9f-cf14771982b9",
+                                "id": "453d866f-ceec-4c8d-ae74-81af63078362",
                                 "name": "Соль",
                                 "net_weight": 3.5,
                                 "type": "Src.Models.ingredient_model.ingredient_model",
                                 "nomenclature": {
                                     "full_name": "Соль пищевая",
-                                    "id": "cbba5397-afab-479a-93ff-8579f826eff7",
+                                    "id": "37a02c9a-dfeb-4280-94bf-8658f8d7b1b3",
                                     "name": "Соль",
                                     "group": {
-                                        "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                                        "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                                         "name": "Сырье",
                                         "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                                     },
                                     "type": "Продукт",
                                     "unit": {
-                                        "id": "539b31bd-98d5-4ee8-a262-e66c7ee30f46",
+                                        "id": "15cb0d2e-cfab-48f0-a306-3cfceb55eecf",
                                         "name": "Чайная ложка (ч.л.)",
                                         "ratio": 7.0,
                                         "type": "Src.Models.unit_model.unit_model",
                                         "base_unit": {
-                                            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                             "name": "Грамм (г)",
                                             "ratio": 1.0,
                                             "type": "Src.Models.unit_model.unit_model",
@@ -905,7 +905,7 @@
                                 },
                                 "recipe": null,
                                 "unit": {
-                                    "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                    "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                     "name": "Грамм (г)",
                                     "ratio": 1.0,
                                     "type": "Src.Models.unit_model.unit_model",
@@ -915,16 +915,16 @@
                         ],
                         "owner": {
                             "full_name": "Сливочно-грибной соус (п/ф)",
-                            "id": "6ede64f0-8f2e-4e7c-ad22-0f371160ca04",
+                            "id": "ab72db33-23ed-4566-8ff7-3ddd5e6369a9",
                             "name": "Сливочно-грибной соус",
                             "group": {
-                                "id": "edd12cff-8c28-42c0-99a1-023526ba473f",
+                                "id": "272ed4d3-f439-46cd-b79c-68838a1689e8",
                                 "name": "Полуфабрикаты",
                                 "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                             },
                             "type": "Полуфабрикат",
                             "unit": {
-                                "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                                "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                                 "name": "Грамм (г)",
                                 "ratio": 1.0,
                                 "type": "Src.Models.unit_model.unit_model",
@@ -933,7 +933,7 @@
                         }
                     },
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -942,22 +942,22 @@
                 },
                 {
                     "gross_weight": 32.0,
-                    "id": "e18c53d7-5831-436b-91c6-003b4c7ed07e",
+                    "id": "6e80e872-6815-4874-9818-42616d374c0d",
                     "name": "Сыр Пармезан",
                     "net_weight": 30.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Сыр Пармезан",
-                        "id": "04c683be-9a1e-4b99-bca9-541b75193580",
+                        "id": "134976ef-ebf2-492f-b2d8-f9487831affe",
                         "name": "Сыр Пармезан",
                         "group": {
-                            "id": "75fa26db-2131-47ba-94f2-df5132c9ae36",
+                            "id": "c63b515a-4c56-409f-a5c6-24a005807391",
                             "name": "Сырье",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Продукт",
                         "unit": {
-                            "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                            "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                             "name": "Грамм (г)",
                             "ratio": 1.0,
                             "type": "Src.Models.unit_model.unit_model",
@@ -966,7 +966,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -975,22 +975,22 @@
                 },
                 {
                     "gross_weight": 20.0,
-                    "id": "e45caa50-69ad-4bd4-988f-4ce9c8b75b37",
+                    "id": "eb89d2e9-4c58-43d1-8476-145a83dbe67c",
                     "name": "Контейнер крафтовый",
                     "net_weight": 0.0,
                     "type": "Src.Models.ingredient_model.ingredient_model",
                     "nomenclature": {
                         "full_name": "Контейнер крафтовый",
-                        "id": "492be0c1-69db-467a-8dfd-e48c5771d1b3",
+                        "id": "c05e50b3-c405-4f1b-bae6-20a6b53bb307",
                         "name": "Контейнер крафтовый",
                         "group": {
-                            "id": "02de4bfc-53d7-4e37-af50-fd0b4770630b",
+                            "id": "5559e940-c9c2-48f8-bfe3-12c44d1981b0",
                             "name": "Упаковка",
                             "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                         },
                         "type": "Упаковка",
                         "unit": {
-                            "id": "48ec0780-7488-430c-84f9-7d59eafe5579",
+                            "id": "6ee118f6-f202-4372-b7bf-433daa8ea1e3",
                             "name": "Штука (шт)",
                             "ratio": 1.0,
                             "type": "Src.Models.unit_model.unit_model",
@@ -999,7 +999,7 @@
                     },
                     "recipe": null,
                     "unit": {
-                        "id": "6bc7a0ec-a9db-421e-ac96-bd5b27a8576f",
+                        "id": "49b7de51-248a-4f9a-929e-c5ef4a0f907b",
                         "name": "Грамм (г)",
                         "ratio": 1.0,
                         "type": "Src.Models.unit_model.unit_model",
@@ -1009,16 +1009,16 @@
             ],
             "owner": {
                 "full_name": "Паста сливочная с курицей",
-                "id": "374281e1-ffaa-4955-8054-fbdfd6d10f6a",
+                "id": "579605df-f727-4f44-93d5-733e4b94625f",
                 "name": "Паста сливочная с курицей",
                 "group": {
-                    "id": "62a5514d-f7f8-402c-b7fb-db1fc906d31d",
+                    "id": "95b3c95c-c8f2-4606-815c-b9d06761cdef",
                     "name": "Готовая продукция",
                     "type": "Src.Models.nomenclature_group_model.nomenclature_group_model"
                 },
                 "type": "Продукт",
                 "unit": {
-                    "id": "48ec0780-7488-430c-84f9-7d59eafe5579",
+                    "id": "6ee118f6-f202-4372-b7bf-433daa8ea1e3",
                     "name": "Штука (шт)",
                     "ratio": 1.0,
                     "type": "Src.Models.unit_model.unit_model",
