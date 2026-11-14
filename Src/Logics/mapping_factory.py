@@ -22,6 +22,11 @@ from Src.Dtos.recipe_dto import recipe_dto
 from Src.Dtos.storage_dto import storage_dto
 from Src.Logics.identity_cache import identity_cache
 
+from Src.Models.organization_model import organization_model
+from Src.Models.settings_model import settings_model
+from Src.Dtos.organization_dto import organization_dto
+from Src.Dtos.settings_dto import settings_dto
+
 
 class mapping_factory(abstract_mapping_factory):
     """
@@ -41,6 +46,8 @@ class mapping_factory(abstract_mapping_factory):
             nomenclature_dto:       nomenclature_model,
             ingredient_dto:         ingredient_model,
             recipe_dto:             recipe_model,
+            organization_dto:       organization_model,
+            settings_dto:           settings_model,
         }
 
     @property

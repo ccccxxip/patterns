@@ -8,6 +8,8 @@ from Src.Models.unit_model import unit_model
 from Src.Models.nomenclature_model import nomenclature_model
 from Src.Models.recipe_model import recipe_model
 
+from Src.Core.validator import validator, operation_exception
+
 
 class storage_manager(abstract_manager):
     """
@@ -159,26 +161,157 @@ class storage_manager(abstract_manager):
     def recipes(self) -> list:
         return self.__data["recipe"]
         
+    @staticmethod
+    def normalize_key(key: str) -> str:
+        """Приводит ключ сущности к стандартному виду (убирает _model, суффиксы и тд)"""
+        k = str(key).lower().strip().replace("_model", "")
+        aliases = {
+            "warehouses": "warehouse",
+            "units": "unit",
+            "groups": "group",
+            "nomenclatures": "nomenclature",
+            "recipes": "recipe",
+        }
+        return aliases.get(k, k)
+
+    def get_entities_by_type(self, entity_type: str) -> list:
+        """Возвращает список всех сущностей указанного типа"""
+        if not self.is_loaded:
+            self.load()
+        k = self.normalize_key(entity_type)
+        return self.__data.get(k, [])
+
     def get_entity(self, entity_type: str, entity_id: str):
+        """Ищет сущность по типу и id (или имени)"""
+        items = self.get_entities_by_type(entity_type)
+        target = str(entity_id).strip()
+        for item in items:
+            owner_name = getattr(item, "owner", None) and getattr(item.owner, "name", None)
+            if getattr(item, "id", None) == target or getattr(item, "name", None) == target or owner_name == target:
+                return item
+        return None
+
+    def check_relations(self, entity_type: str, item_id: str) -> list:
         """
-        Ищет сущность в хранилище по типу и идентификатору (или наименованию).
-        Метод инкапсулирует логику доступа к данным в storage_manager
+        Проверяет ссылочную целостность: находит все сущности, которые ссылаются на данный объект
+        Возвращает список текстовых описаний найденных связей
         """
         if not self.is_loaded:
             self.load()
 
-        type_map = {
-            "nomenclature": self.nomenclatures,
-            "unit": self.units,
-            "recipe": self.recipes,
-        }
+        k = self.normalize_key(entity_type)
+        target_id = str(item_id).strip()
+        relations = []
 
-        items = type_map.get(entity_type)
-        if items is None:
-            return None
+        # Проверка единицы измерения
+        if k == "unit":
+            for u in self.units:
+                if u.base_unit and str(u.base_unit.id) == target_id and str(u.id) != target_id:
+                    relations.append(f"Единица измерения '{u.name}' использует её как базовую единицу")
+            for n in self.nomenclatures:
+                if n.unit and str(n.unit.id) == target_id:
+                    relations.append(f"Номенклатура '{n.name}' использует эту единицу измерения")
+            for r in self.recipes:
+                for ing in getattr(r, "ingredients", []):
+                    if ing.unit and str(ing.unit.id) == target_id:
+                        relations.append(f"Рецепт '{r.name}' использует эту единицу измерения в ингредиенте '{ing.name}'")
 
-        for item in items:
-            owner_name = getattr(item, "owner", None) and getattr(item.owner, "name", None)
-            if item.id == entity_id or item.name == entity_id or owner_name == entity_id:
-                return item
-        return None
+        # Проверка группы номенклатуры
+        elif k == "group":
+            for n in self.nomenclatures:
+                if n.group and str(n.group.id) == target_id:
+                    relations.append(f"Номенклатура '{n.name}' входит в эту группу")
+
+        # Проверка номенклатуры
+        elif k == "nomenclature":
+            for r in self.recipes:
+                if r.owner and str(r.owner.id) == target_id:
+                    relations.append(f"Рецепт '{r.name}' привязан к этой номенклатуре как владелец")
+                for ing in getattr(r, "ingredients", []):
+                    if ing.nomenclature and str(ing.nomenclature.id) == target_id:
+                        relations.append(f"Рецепт '{r.name}' использует эту номенклатуру в ингредиенте '{ing.name}'")
+
+        # Проверка рецепта
+        elif k == "recipe":
+            for r in self.recipes:
+                for ing in getattr(r, "ingredients", []):
+                    if getattr(ing, "recipe", None) and str(ing.recipe.id) == target_id and str(r.id) != target_id:
+                        relations.append(f"Рецепт '{r.name}' включает этот рецепт как полуфабрикат")
+
+        return relations
+
+    def add_entity(self, entity_type: str, item) -> object:
+        """
+        Добавляет доменную сущность с проверкой уникальности id
+        """
+        if not self.is_loaded:
+            self.load()
+
+        k = self.normalize_key(entity_type)
+        if k not in self.__data:
+            raise operation_exception(f"Неизвестный тип сущности: '{entity_type}'")
+
+        item_id = getattr(item, "id", None)
+        if item_id:
+            for existing in self.__data[k]:
+                if getattr(existing, "id", None) == item_id:
+                    raise operation_exception(f"Сущность типа '{k}' с id '{item_id}' уже существует")
+
+        self.add(k, item)
+        return item
+
+    def delete_entity(self, entity_type: str, item_id: str) -> bool:
+        """
+        Удаляет доменную сущность с контролем ссылочной целостности
+        """
+        if not self.is_loaded:
+            self.load()
+
+        k = self.normalize_key(entity_type)
+        if k not in self.__data:
+            raise operation_exception(f"Неизвестный тип сущности: '{entity_type}'")
+
+        existing = self.get_entity(k, item_id)
+        if existing is None:
+            raise operation_exception(f"Сущность типа '{k}' с id '{item_id}' не найдена")
+
+        # Контроль связей: запрещено удалять, если есть зависимости
+        relations = self.check_relations(k, existing.id)
+        if relations:
+            reasons = "; ".join(relations)
+            raise operation_exception(
+                f"Запрещено удалять сущность '{k}' с id '{item_id}', так как она связана с другими объектами: {reasons}"
+            )
+
+        self.__data[k].remove(existing)
+        return True
+
+    def update_entity(self, entity_type: str, item_id: str, new_item) -> object:
+        """
+        Обновляет сущность. Если изменяется уникальный код (id), проверяет отсутствие связе
+        """
+        if not self.is_loaded:
+            self.load()
+
+        k = self.normalize_key(entity_type)
+        if k not in self.__data:
+            raise operation_exception(f"Неизвестный тип сущности: '{entity_type}'")
+
+        existing = self.get_entity(k, item_id)
+        if existing is None:
+            raise operation_exception(f"Сущность типа '{k}' с id '{item_id}' не найдена")
+
+        new_id = getattr(new_item, "id", item_id)
+        # Если пытаются изменить ID сущности
+        if new_id != item_id:
+            relations = self.check_relations(k, item_id)
+            if relations:
+                reasons = "; ".join(relations)
+                raise operation_exception(
+                    f"Запрещено изменять код (id) сущности '{item_id}', так как она связана с другими объектами: {reasons}"
+                )
+
+        # Заменяем старый объект на новый
+        idx = self.__data[k].index(existing)
+        self.__data[k][idx] = new_item
+        return new_item
