@@ -2,6 +2,7 @@ from Src.Core.base_model import base_model
 from Src.Models.organization_model import organization_model
 from Src.Core.validator import validator
 from Src.Dtos.report_type_dto import report_type_enum
+from Src.Core.common import common
 
 
 class settings_model(base_model):
@@ -68,3 +69,22 @@ class settings_model(base_model):
         """Задаёт формат вывода отчётов по умолчанию"""
         validator.validate(value, report_type_enum, field_name="response_format")
         self.__response_format = value
+
+    @classmethod
+    def create(cls, data: dict) -> "settings_model":
+        """Фабричный метод создания модели настроек из словаря через рефлексию"""
+        if not isinstance(data, dict):
+            return cls()
+
+        item = cls()
+
+        for field in common.get_fields(item):
+            if field in data and data[field] is not None:
+                val = data[field]
+                if field == "response_format" and isinstance(val, str):
+                    val = report_type_enum[val.upper()]
+                elif field == "organization" and isinstance(val, dict):
+                    val = organization_model.create(val)
+                setattr(item, field, val)
+
+        return item

@@ -18,8 +18,19 @@ class convert_factory(abstract_convert_factory):
     и преобразует любые объекты в структуру словарей (метод Convert)
     """
 
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(convert_factory, cls).__new__(cls)
+        return cls._instance
+
     def __init__(self):
         """Инициализирует фабрику экземплярами спец конвертеров, связывая их с фабрикой"""
+        if hasattr(self, "_initialized") and self._initialized:
+            return
+        self._initialized = True
+
         self.__basic = basic_convertor(self)
         self.__datetime = datetime_convertor(self)
         self.__reference = reference_convertor(self)

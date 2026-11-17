@@ -63,55 +63,27 @@ class settings_manager(abstract_manager):
     
     def convert(self) -> bool:
         """
-        Переносит данные из черновика __data в чистую модель __settings
-        Защищает от ситуаций, когда в JSON отсутствуют ключи
-        Неполные данные не прерывают загрузку исключением -
-        возвращается False, что отражается на флаге is_loaded.
+        Переносит данные из __data в чистую модель __settings 
+        через общий механизм десериализации (mapping_factory)
         """
         if not self.__data:
             return False
 
-        success = True
+        from Src.Logics.mapping_factory import mapping_factory
 
-        # Загрузка организации. Сначала проверяем, что есть нужные ключи,
-        # и потом создаём объект - без надежды поймать исключение
-        if "organization" in self.__data:
-            org_data = self.__data["organization"]
-            required_keys = {"name", "inn", "bik", "account", "ownership_form"}
+        try:
+            factory = mapping_factory()
+            model = factory.deserialize("settings", self.__data)
+            if model is not None:
+                self.__settings = model
 
-            if isinstance(org_data, dict) and required_keys.issubset(org_data.keys()):
-                self.__settings.organization = organization_model(
-                    name=org_data["name"],
-                    inn=org_data["inn"],
-                    bik=org_data["bik"],
-                    account=org_data["account"],
-                    ownership_form=org_data["ownership_form"]
-                )
-            else:
-                # не хватает обязательных полей - организацию не создаём,
-                # но весь load() не падает
-                success = False
+            # Если блок organization был передан в JSON, но не распарсился
+            if "organization" in self.__data and self.__data["organization"] is not None and model.organization is None:
+                return False
 
-        # Если ключа нет, останется значение по умолчанию
-        if "boss_name" in self.__data:
-            self.__settings.boss_name = self.__data["boss_name"]
-
-        if "account_name" in self.__data:
-            self.__settings.account_name = self.__data["account_name"]
-
-        if "is_first_start" in self.__data:
-            self.__settings.is_first_start = bool(self.__data["is_first_start"])
-
-        # Загрузка формата вывода отчётов
-        # Ожидается строка: "TXT", "CSV", "MARKDOWN", "XML", "HTML"
-        if "response_format" in self.__data:
-            raw_format = self.__data["response_format"]
-            try:
-                self.__settings.response_format = report_type_enum[raw_format.upper()]
-            except (KeyError, AttributeError):
-                success = False
-        return success
-
+            return True
+        except Exception:
+            return False
     @property  
     def settings(self) -> settings_model:  
         """ 

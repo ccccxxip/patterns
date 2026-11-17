@@ -1,0 +1,326 @@
+openapi: 3.0.3
+info:
+  title: Patterns 2026 API
+  version: "1.0.0"
+  description: REST API для управления доменными сущностями и формирования отчетов ООО «Ромашка»
+
+servers:
+  - url: http://localhost:8080
+    description: Локальный сервер разработки
+
+tags:
+  - name: Отчёты
+    description: Форматы и построение отчетов
+  - name: Доменные сущности
+    description: CRUD операции для управления доменными сущностями
+
+paths:
+  /api/reports/formats:
+    get:
+      tags:
+        - Отчёты
+      summary: Получить список всех форматов для построения отчетов
+      description: Возвращает список доступных форматов генерации отчетов в формате JSON
+      operationId: main.get_report_formats
+      responses:
+        '200':
+          description: Успешный ответ со списком форматов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example: ["TXT", "CSV", "MARKDOWN", "XML", "HTML"]
+
+  /api/get_report_formats:
+    get:
+      tags:
+        - Отчёты
+      summary: Получить список всех форматов для построения отчетов (алиас)
+      description: Возвращает список доступных форматов генерации отчетов в формате JSON
+      operationId: main.get_report_formats_alias
+      responses:
+        '200':
+          description: Успешный ответ со списком форматов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example: ["TXT", "CSV", "MARKDOWN", "XML", "HTML"]
+
+  /api/get_entities:
+    get:
+      tags:
+        - Доменные сущности
+      summary: Получить список ключей доменных сущностей
+      description: Возвращает список всех типов сущностей, доступных в хранилище
+      operationId: main.get_entities
+      responses:
+        '200':
+          description: Список типов сущностей в формате JSON
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+              example: ["warehouse", "unit", "group", "nomenclature", "recipe"]
+
+  /api/entities/{entity_type}:
+    get:
+      tags:
+        - Доменные сущности
+      summary: Получить список всех сущностей указанного типа
+      description: Возвращает список объектов для типов warehouse, unit, group, nomenclature, recipe
+      operationId: main.get_entities_by_type
+      parameters:
+        - name: entity_type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Тип сущности: warehouse, unit, group, nomenclature, recipe"
+      responses:
+        '200':
+          description: Список сущностей в формате JSON
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Неизвестный тип сущности
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+    post:
+      tags:
+        - Доменные сущности
+      summary: Добавить новую доменную сущность
+      description: Создает новую доменную сущность с проверкой уникальности ID
+      operationId: main.create_entity
+      parameters:
+        - name: entity_type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Тип сущности: warehouse, unit, group, nomenclature, recipe"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Сущность успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Ошибка валидации или дубликат идентификатора
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/entities/{entity_type}/{id}:
+    get:
+      tags:
+        - Доменные сущности
+      summary: Получить доменную сущность по ID
+      description: Возвращает конкретную сущность по уникальному идентификатору
+      operationId: main.get_entity_by_id
+      parameters:
+        - name: entity_type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Тип сущности: warehouse, unit, group, nomenclature, recipe"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор сущности
+      responses:
+        '200':
+          description: Данные сущности в формате JSON
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Сущность не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+    put:
+      tags:
+        - Доменные сущности
+      summary: Обновить существующую доменную сущность
+      description: Обновляет сущность. Запрещено изменять ID, если сущность связана с другими объектами
+      operationId: main.update_entity
+      parameters:
+        - name: entity_type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Тип сущности: warehouse, unit, group, nomenclature, recipe"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор сущности
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Сущность успешно обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Ошибка валидации или попытка изменить связанный ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Сущность не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+    patch:
+      tags:
+        - Доменные сущности
+      summary: Частично обновить существующую доменную сущность
+      description: Обновляет только указанные поля сущности. Запрещено изменять ID, если сущность связана с другими объектами
+      operationId: main.patch_entity
+      parameters:
+        - name: entity_type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Тип сущности: warehouse, unit, group, nomenclature, recipe"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор сущности
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Сущность успешно обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+        '400':
+          description: Ошибка валидации или попытка изменить связанный ID
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Сущность не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+    delete:
+      tags:
+        - Доменные сущности
+      summary: Удалить доменную сущность
+      description: Удаляет сущность. Запрещено удалять, если на сущность ссылаются другие объекты
+      operationId: main.delete_entity
+      parameters:
+        - name: entity_type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Тип сущности: warehouse, unit, group, nomenclature, recipe"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор сущности
+      responses:
+        '200':
+          description: Сущность успешно удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+        '400':
+          description: Запрещено удалять (нарушение ссылочной целостности)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        '404':
+          description: Сущность не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string

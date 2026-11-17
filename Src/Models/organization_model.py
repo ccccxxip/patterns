@@ -106,3 +106,16 @@ class organization_model(base_model):
             raise arguments_exception("ownership_form", "Форма собственности не может быть пустой")
 
         self._ownership_form = normalized_value
+    
+    @classmethod
+    def create(cls, data: dict) -> "organization_model":
+        """Фабричный метод создания модели организации из словаря"""
+        name = data.get("name", "")
+        inn = data.get("inn", "")
+        bik = data.get("bik", "")
+        account = data.get("account", "")
+        ownership_form = data.get("ownership_form", "")
+        item = cls(name=name, inn=inn, bik=bik, account=account, ownership_form=ownership_form)
+        if "id" in data and data["id"]:
+            item.id = data["id"]
+        return item
