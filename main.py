@@ -4,6 +4,8 @@ from Src.Logics.storage_manager import storage_manager
 from Src.Logics.report_factory import report_factory
 from Src.Logics.convert_factory import convert_factory
 from Src.Logics.mapping_factory import mapping_factory
+from Src.Logics.prototype import prototype
+from Src.Logics.osv_service import osv_service
 from Src.Core.validator import operation_exception
 from Src.Core.exception import arguments_exception
 from Src.Dtos.report_type_dto import report_type_enum
@@ -13,6 +15,7 @@ api = connexion.FlaskApp(__name__, specification_dir="./")
 store = storage_manager()
 converter = convert_factory()
 mapping = mapping_factory()
+osv = osv_service(store)
 
 
 @api.route("/api/get_report", methods=["GET"])
@@ -206,6 +209,38 @@ def delete_entity(entity_type: str, id: str):
         return flask.jsonify({"result": "success"}), 200
     except operation_exception as ex:
         return flask.jsonify({"error": str(ex)}), 400
+
+
+def filter_entities(entity_type: str, body: dict = None):
+    """POST /api/filter/{entity_type} — фильтрация сущностей через шаблон Прототип"""
+    k = store.normalize_key(entity_type)
+    if k not in store.data:
+        return flask.jsonify({"error": f"Неизвестный тип сущности '{entity_type}'"}), 400
+
+    data = body if body is not None else (flask.request.get_json(silent=True) or {})
+    try:
+        filter_obj = mapping.deserialize("filter", data)
+        items = store.get_entities_by_type(k)
+        proto = prototype(items)
+        filtered_items = proto.clone(filter_obj).data
+        return flask.jsonify(converter.Convert(filtered_items)), 200
+    except (operation_exception, arguments_exception) as ex:
+        return flask.jsonify({"error": str(ex)}), 400
+    except Exception as ex:
+        return flask.jsonify({"error": f"Внутренняя ошибка сервера: {str(ex)}"}), 500
+
+
+def get_osv_report(body: dict = None):
+    """POST /api/reports/osv — получение оборотно-сальдовой ведомости через Прототип"""
+    data = body if body is not None else (flask.request.get_json(silent=True) or {})
+    try:
+        filter_obj = mapping.deserialize("filter", data)
+        report_data = osv.build(filter_obj)
+        return flask.jsonify(converter.Convert(report_data)), 200
+    except (operation_exception, arguments_exception) as ex:
+        return flask.jsonify({"error": str(ex)}), 400
+    except Exception as ex:
+        return flask.jsonify({"error": f"Внутренняя ошибка сервера: {str(ex)}"}), 500
 
 
 # Подключаем спецификацию
