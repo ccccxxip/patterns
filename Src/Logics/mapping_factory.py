@@ -27,6 +27,7 @@ from Src.Models.organization_model import organization_model
 from Src.Models.settings_model import settings_model
 from Src.Dtos.organization_dto import organization_dto
 from Src.Dtos.settings_dto import settings_dto
+from Src.Dtos.filter_dto import filter_dto
 
 
 class mapping_factory(abstract_mapping_factory):
@@ -49,6 +50,7 @@ class mapping_factory(abstract_mapping_factory):
             recipe_dto:             recipe_model,
             organization_dto:       organization_model,
             settings_dto:           settings_model,
+            filter_dto:             filter_dto,
         }
 
         # Таблица соответствия строкового имени сущности и класса DTO
@@ -61,6 +63,7 @@ class mapping_factory(abstract_mapping_factory):
             "recipe":       recipe_dto,
             "organization": organization_dto,
             "settings":     settings_dto,
+            "filter":       filter_dto,
         }
 
     def get_dto_class(self, entity_type: str) -> Type:
@@ -110,6 +113,9 @@ class mapping_factory(abstract_mapping_factory):
 
         if isinstance(source, storage_dto):
             return self._map_storage(source)
+
+        if isinstance(source, filter_dto):
+            return source
 
         source_type = type(source)
         domain_cls = self.__mapping.get(source_type)

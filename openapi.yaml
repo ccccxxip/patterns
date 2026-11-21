@@ -324,3 +324,129 @@ paths:
                 properties:
                   error:
                     type: string
+
+  /api/filter/{entity_type}:
+    post:
+      tags:
+        - Доменные сущности
+      summary: Фильтрация сущностей через шаблон Прототип
+      description: Фильтрует список доменных сущностей по критериям filter_dto
+      operationId: main.filter_entities
+      parameters:
+        - name: entity_type
+          in: path
+          required: true
+          schema:
+            type: string
+          description: "Тип сущности: warehouse, unit, group, nomenclature, recipe, transaction"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Наименование для поиска
+                id:
+                  type: string
+                  description: Уникальный код для поиска
+                filter_type:
+                  type: string
+                  enum: ["EQUALS", "LIKE"]
+                  default: "EQUALS"
+                  description: "Тип фильтрации: EQUALS или LIKE"
+                filters:
+                  type: array
+                  description: Список отдельных условий фильтрации
+                  items:
+                    type: object
+                    properties:
+                      field_name:
+                        type: string
+                        description: Имя поля для фильтрации
+                      value:
+                        type: string
+                        description: Значение для поиска
+                      filter_type:
+                        type: string
+                        enum: ["EQUALS", "LIKE"]
+                        default: "EQUALS"
+      responses:
+        '200':
+          description: Список отфильтрованных сущностей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Ошибка валидации или неизвестный тип сущности
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /api/reports/osv:
+    post:
+      tags:
+        - Отчёты
+      summary: Получить оборотно-сальдовую ведомость (ОСВ) с учетом фильтрации
+      description: Формирует ОСВ по номенклатуре и фильтрует через шаблон Прототип
+      operationId: main.get_osv_report
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Наименование номенклатуры или группы для поиска
+                id:
+                  type: string
+                  description: Уникальный код номенклатуры
+                filter_type:
+                  type: string
+                  enum: ["EQUALS", "LIKE"]
+                  default: "EQUALS"
+                filters:
+                  type: array
+                  description: Список отдельных условий фильтрации
+                  items:
+                    type: object
+                    properties:
+                      field_name:
+                        type: string
+                        description: Имя поля для фильтрации
+                      value:
+                        type: string
+                        description: Значение для поиска
+                      filter_type:
+                        type: string
+                        enum: ["EQUALS", "LIKE"]
+                        default: "EQUALS"
+      responses:
+        '200':
+          description: Оборотно-сальдовая ведомость
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Ошибка валидации входных данных
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
