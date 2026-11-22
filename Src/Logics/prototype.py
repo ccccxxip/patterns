@@ -45,17 +45,33 @@ class prototype(abstract_prototype):
 
     @classmethod
     def _matches_current(cls, obj: Any, filter_: filter_dto) -> bool:
-        """Проверяет совпадение всех заполненных критериев на текущем объекте"""
+        """
+        Проверяет совпадение критериев фильтра на объекте через рефлексию
+        """
         conditions = []
-        if filter_.name:
-            conditions.append(filter_type.match(getattr(obj, "name", None), filter_.name, filter_.filter_type))
-        if filter_.id:
-            conditions.append(filter_type.match(getattr(obj, "id", None), filter_.id, filter_.filter_type))
-        if filter_.filters:
-            conditions.append(any(
-                filter_type.match(getattr(obj, f.field_name, None), f.value, f.filter_type)
-                for f in filter_.filters
-            ))
+        obj_fields = set(common.get_fields(obj))
+
+        # Свойства filter_dto
+        for field in common.get_fields(filter_):
+            if field in ("filter_type", "is_empty", "filters", "start_period", "end_period"):
+                continue
+            val = getattr(filter_, field, None)
+            if val and field in obj_fields:
+                conditions.append(filter_type.match(getattr(obj, field, None), val, filter_.filter_type))
+
+        # Критерии из списка filter_item_dto
+        for item in filter_.filters:
+            if item.field_name in obj_fields:
+                conditions.append(filter_type.match(getattr(obj, item.field_name, None), item.value, item.filter_type))
+
+        # Фильтрация периода (если у объекта есть свойство period)
+        if "period" in obj_fields:
+            period = getattr(obj, "period", None)
+            if filter_.start_period is not None:
+                conditions.append(period is not None and period >= filter_.start_period)
+            if filter_.end_period is not None:
+                conditions.append(period is not None and period <= filter_.end_period)
+
         return all(conditions) if conditions else False
 
     @classmethod

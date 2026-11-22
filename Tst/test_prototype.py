@@ -1,6 +1,7 @@
 import pytest
 from Src.Logics.prototype import prototype
-from Src.Dtos.filter_dto import filter_dto, filter_item_dto
+from Src.Dtos.filter_dto import filter_dto
+from Src.Dtos.filter_item_dto import filter_item_dto
 from Src.Core.filter_type import filter_type
 from Src.Logics.storage_manager import storage_manager
 

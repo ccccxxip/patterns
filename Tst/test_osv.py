@@ -1,3 +1,4 @@
+from datetime import datetime
 from Src.Models.osv_row_model import osv_row_model
 from Src.Models.warehouse_model import warehouse_model
 from Src.Models.nomenclature_model import nomenclature_model
@@ -86,3 +87,73 @@ def test_osv_service_build_filtered_by_nested_group():
     assert len(rows) > 0
     for r in rows:
         assert r.nomenclature.group.name == "Сырье"
+
+
+def test_osv_service_build_with_period_calculates_opening_balance():
+    """
+    Сценарий: Формирование ОСВ с датой начала между приходом и расходом
+    Ожидаемый результат: Приход попадает в начальный остаток, расход — в оборот
+    """
+    # Подготовка
+    service = osv_service()
+    f = filter_dto()
+    f.name = "Куриное филе"
+    f.start_period = datetime(2026, 11, 5, 0, 0)
+
+    # Действие
+    rows = service.build(f)
+
+    # Проверка
+    assert len(rows) == 1
+    row = rows[0]
+    assert row.start_balance == 100.0
+    assert row.turnover_in == 0.0
+    assert row.turnover_out == 25.0
+    assert row.end_balance == 75.0
+
+
+def test_osv_service_build_after_all_transactions():
+    """
+    Сценарий: Формирование ОСВ с датой начала после всех транзакций
+    Ожидаемый результат: Все транзакции учтены в начальном остатке, обороты нулевые
+    """
+    # Подготовка
+    service = osv_service()
+    f = filter_dto()
+    f.name = "Куриное филе"
+    f.start_period = datetime(2026, 11, 15, 0, 0)
+
+    # Действие
+    rows = service.build(f)
+
+    # Проверка
+    assert len(rows) == 1
+    row = rows[0]
+    assert row.start_balance == 75.0
+    assert row.turnover_in == 0.0
+    assert row.turnover_out == 0.0
+    assert row.end_balance == 75.0
+
+
+def test_osv_service_build_with_date_range():
+    """
+    Сценарий: Формирование ОСВ за конкретный диапазон дат
+    Ожидаемый результат: Учитываются только обороты внутри указанного интервала
+    """
+    # Подготовка
+    service = osv_service()
+    f = filter_dto()
+    f.name = "Куриное филе"
+    f.start_period = datetime(2026, 11, 1, 0, 0)
+    f.end_period = datetime(2026, 11, 5, 0, 0)
+
+    # Действие
+    rows = service.build(f)
+
+    # Проверка
+    assert len(rows) == 1
+    row = rows[0]
+    assert row.start_balance == 0.0
+    assert row.turnover_in == 100.0
+    assert row.turnover_out == 0.0
+    assert row.end_balance == 100.0

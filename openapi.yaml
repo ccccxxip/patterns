@@ -357,6 +357,14 @@ paths:
                   enum: ["EQUALS", "LIKE"]
                   default: "EQUALS"
                   description: "Тип фильтрации: EQUALS или LIKE"
+                start_period:
+                  type: string
+                  format: date-time
+                  description: Дата начала периода (ГГГГ-ММ-ДД или ISO)
+                end_period:
+                  type: string
+                  format: date-time
+                  description: Дата окончания периода (ГГГГ-ММ-ДД или ISO)
                 filters:
                   type: array
                   description: Список отдельных условий фильтрации
@@ -416,6 +424,14 @@ paths:
                   type: string
                   enum: ["EQUALS", "LIKE"]
                   default: "EQUALS"
+                start_period:
+                  type: string
+                  format: date-time
+                  description: Дата начала периода (ГГГГ-ММ-ДД или ISO)
+                end_period:
+                  type: string
+                  format: date-time
+                  description: Дата окончания периода (ГГГГ-ММ-ДД или ISO)
                 filters:
                   type: array
                   description: Список отдельных условий фильтрации

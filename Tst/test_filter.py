@@ -1,5 +1,6 @@
 from Src.Core.filter_type import filter_type
-from Src.Dtos.filter_dto import filter_dto, filter_item_dto
+from Src.Dtos.filter_dto import filter_dto
+from Src.Dtos.filter_item_dto import filter_item_dto
 from Src.Logics.mapping_factory import mapping_factory
 from Src.Core.common import common
 
