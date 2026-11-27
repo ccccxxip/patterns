@@ -38,7 +38,8 @@ class storage_manager(abstract_manager):
                 "unit": [],
                 "group": [],
                 "nomenclature": [],
-                "recipe": []
+                "recipe": [],
+                "transaction": []
             }
             self.__ref_index = reference_index()
 
@@ -117,6 +118,17 @@ class storage_manager(abstract_manager):
             self.add("recipe", sauce_recipe)
             self.add("recipe", pasta_recipe)
 
+            # Складские транзакции (движения номенклатуры)
+            from Src.Models.transaction_model import transaction_model
+            import datetime
+
+            period_in = datetime.datetime(2026, 11, 1, 10, 0)
+            period_out = datetime.datetime(2026, 11, 10, 15, 30)
+
+            for nom in (flour, sugar, chicken, mushrooms, cream, oil, garlic, salt, pasta, parmesan):
+                self.add("transaction", transaction_model.create_receipt(main_warehouse, nom, nom.unit, 100.0, period_in))
+                self.add("transaction", transaction_model.create_expense(main_warehouse, nom, nom.unit, 25.0, period_out))
+
             # Отключаем флаг, чтобы не дублировать данные при следующих запусках
             set_mgr.settings.is_first_start = False
 
@@ -167,6 +179,15 @@ class storage_manager(abstract_manager):
     @property
     def recipes(self) -> list:
         return self.__data["recipe"]
+
+    @property
+    def transactions(self) -> list:
+        return self.__data.get("transaction", [])
+
+    @staticmethod
+    def transaction_key() -> str:
+        """Ключ для транзакций в хранилище"""
+        return "transaction"
         
     @staticmethod
     def normalize_key(key: str) -> str:
@@ -178,6 +199,8 @@ class storage_manager(abstract_manager):
             "groups": "group",
             "nomenclatures": "nomenclature",
             "recipes": "recipe",
+            "transactions": "transaction",
+            "6 transaction": "transaction",
         }
         return aliases.get(k, k)
 
