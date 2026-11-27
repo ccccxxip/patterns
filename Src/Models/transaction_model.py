@@ -75,6 +75,11 @@ class transaction_model(base_model):
         validator.validate(value, datetime.datetime, field_name="period")
         self.__period = value
 
+    def __str__(self) -> str:
+        """Представление транзакции для логирования"""
+        nom_name = self.__nomenclature.name if self.__nomenclature is not None else ""
+        return f"{nom_name}, количество: {self.__value}"
+
     @property
     def storage(self) -> warehouse_model:
         """Алиас для warehouse"""

@@ -193,3 +193,4 @@ cython_debug/
 .DS_Store
 
 _Infra/
+!Logs/app.log

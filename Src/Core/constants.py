@@ -17,3 +17,15 @@ BIK_LENGTH: int = 9
 
 # Точная длина номера расчетного счета организации (organization_model)
 ACCOUNT_LENGTH: int = 20
+
+# Ключ словаря хранилища для складских транзакций
+TRANSACTION_KEY: str = "transaction"
+
+# Формат отметки времени в лог-файле
+LOG_DATETIME_FORMAT: str = "%Y-%m-%d %H:%M:%S"
+
+# Кодировка лог-файла
+LOG_ENCODING: str = "utf-8"
+
+# Путь по умолчанию к лог-файлу
+DEFAULT_LOG_PATH: str = "Logs/app.log"
