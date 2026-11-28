@@ -7,6 +7,9 @@ from Src.Core.validator import validator, operation_exception
 from Src.Models.settings_model import settings_model
 from Src.Models.organization_model import organization_model
 from Src.Dtos.report_type_dto import report_type_enum
+from Src.Core.log_subsystem import log_subsystem
+from Src.Dtos.log_type_enum import log_type_enum
+from Src.Models.log_model import log_model
 
 
 class settings_manager(abstract_manager, abstract_observer):
@@ -63,7 +66,15 @@ class settings_manager(abstract_manager, abstract_observer):
                 self.__data = json.load(file)
                 self._is_loaded = self.convert()
                 if self._is_loaded:
-                    observer.create(event_type.load_settings(), f"Загружены настройки: {inner_file_name}")
+                    observer.create(
+                        event_type.load_settings(),
+                        log_model(
+                            subsystem=log_subsystem.SETTINGS,
+                            level=log_type_enum.INFO,
+                            event=event_type.load_settings(),
+                            message=f"Загружены настройки: {inner_file_name}"
+                        )
+                    )
         except Exception as ex:   
             raise operation_exception(f"Ошибка при загрузке и обработке файла: {inner_file_name}. Детали: {ex}")
     
@@ -105,7 +116,15 @@ class settings_manager(abstract_manager, abstract_observer):
         """
         validator.validate(value, settings_model, field_name="settings")
         self.__settings = value
-        observer.create(event_type.change_settings(), "Настройки обновлены")
+        observer.create(
+            event_type.change_settings(),
+            log_model(
+                subsystem=log_subsystem.SETTINGS,
+                level=log_type_enum.INFO,
+                event=event_type.change_settings(),
+                message="Настройки обновлены"
+            )
+        )
 
     def update_settings(self, new_settings: settings_model) -> None:
         """

@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 from Src.Core.abstract_observer import abstract_observer
 from Src.Core.constants import LOG_DATETIME_FORMAT, LOG_ENCODING, DEFAULT_LOG_PATH
+from Src.Models.log_model import log_model
 
 
 class log_observer(abstract_observer):
@@ -31,11 +32,15 @@ class log_observer(abstract_observer):
 
     def handler(self, event_types: str, params: object = None) -> None:
         """
-        форматирование и сохранение в лог-файл
+        Форматирование и сохранение в лог-файл
         """
-        timestamp = datetime.now().strftime(LOG_DATETIME_FORMAT)
-        param_str = f" | {params}" if params is not None else ""
-        log_entry = f"[{timestamp}] [{event_types.upper()}]{param_str}\n"
+        if isinstance(params, log_model):
+            log_entry = f"{params}\n"
+        else:
+            time_str = datetime.now().strftime(LOG_DATETIME_FORMAT)
+            param_str = f" | {params}" if params is not None else ""
+            ev = getattr(event_types, "value", str(event_types)).upper()
+            log_entry = f"[{time_str}] [INFO] [SYSTEM] [{ev}]{param_str}\n"
 
         self.__ensure_directory()
         with open(self.__log_file, "a", encoding=LOG_ENCODING) as f:
