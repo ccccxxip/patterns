@@ -55,3 +55,5 @@
 [2026-11-28 15:30:49] [INFO] [WEB] [API_REQUEST] | DELETE /api/entities/warehouse/2c29b275-f7b5-4920-b1e0-4b201b57a256 -> 200
 [2026-11-28 15:31:19] [INFO] [SETTINGS] [LOAD_SETTINGS] | Загружены настройки: Src/settings.json
 [2026-11-28 15:31:19] [INFO] [SETTINGS] [CHANGE_SETTINGS] | Настройки обновлены
+[2026-11-28 16:44:02] [ERROR] [WEB] [API_REQUEST] | GET /api/entities/warehouse/777 -> 404
+[2026-11-28 16:48:44] [ERROR] [WEB] [API_REQUEST] | PUT /api/entities/warehouse/777 -> 404
