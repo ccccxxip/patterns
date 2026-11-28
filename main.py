@@ -1,6 +1,8 @@
+import sys
 import flask
 import connexion
 from Src.Logics.storage_manager import storage_manager
+from Src.Logics.settings_manager import settings_manager
 from Src.Logics.report_factory import report_factory
 from Src.Logics.convert_factory import convert_factory
 from Src.Logics.mapping_factory import mapping_factory
@@ -9,8 +11,41 @@ from Src.Logics.osv_service import osv_service
 from Src.Core.validator import operation_exception
 from Src.Core.exception import arguments_exception
 from Src.Dtos.report_type_dto import report_type_enum
+from Src.Core.event_type import event_type
+from Src.Core.log_subsystem import log_subsystem
+from Src.Dtos.log_type_enum import log_type_enum
+from Src.Models.log_model import log_model
+from Src.Logics.observer import observer
+from Src.Logics.log_observer import log_observer
 
 api = connexion.FlaskApp(__name__, specification_dir="./")
+
+# Защита файла логов от засорения тестами
+if "pytest" not in sys.modules:
+    main_logger = log_observer()
+    observer.add(main_logger)
+
+# Загружаем настройки приложения
+settings_mgr = settings_manager()
+settings_mgr.load()
+
+
+@api.app.after_request
+def log_incoming_request(response):
+    """Логирование вызовов Web-методов через паттерн Наблюдатель"""
+    if flask.request.path.startswith("/api"):
+        status = response.status_code
+        lvl = log_type_enum.ERROR if status >= 400 else (log_type_enum.DEBUG if flask.request.method == "GET" else log_type_enum.INFO)
+        observer.create(
+            event_type.api_request(),
+            log_model(
+                subsystem=log_subsystem.WEB,
+                level=lvl,
+                event=event_type.api_request(),
+                message=f"{flask.request.method} {flask.request.path} -> {status}"
+            )
+        )
+    return response
 
 store = storage_manager()
 converter = convert_factory()

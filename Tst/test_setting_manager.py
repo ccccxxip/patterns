@@ -3,6 +3,8 @@ import json
 import tempfile
 import os
 from Src.Logics.settings_manager import settings_manager
+from Src.Models.settings_model import settings_model
+from Src.Core.exception import arguments_exception
 
 
 def test_not_raise_settings_manager_load():
@@ -212,3 +214,24 @@ def test_settings_manager_load_with_organization_as_wrong_type_sets_is_loaded_fa
     # Проверка
     assert is_exception is False
     assert manager.is_loaded is False
+
+
+def test_settings_manager_setter_and_update():
+    """
+    Проверка работы свойства-сеттера settings и метода update_settings
+    """
+    # Подготовка
+    manager = settings_manager()
+    new_settings = settings_model()
+    new_settings.boss_name = "Петров П.П."
+
+    # Действие
+    manager.settings = new_settings
+
+    # Проверка
+    assert manager.settings == new_settings
+    assert manager.settings.boss_name == "Петров П.П."
+
+    # Проверка валидации типа
+    with pytest.raises(arguments_exception):
+        manager.settings = "неверный тип"

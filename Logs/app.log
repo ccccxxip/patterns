@@ -1,0 +1,59 @@
+[2026-11-28 15:27:53] [DEBUG] [WEB] [API_REQUEST] | GET /api/reports/formats -> 200
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'unit': Грамм (г) (id=732751b1-e739-43b6-bc8d-4b9c09d31c0e)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'unit': Килограмм (кг) (id=aa356208-9b2d-4ba0-b357-cb7e667451be)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'unit': Чайная ложка (ч.л.) (id=5fc564fe-0ffb-40f8-b552-41ce13472c51)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'unit': Миллилитр (мл) (id=d0980781-f75a-4963-9e65-8fd9f87b69c2)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'unit': Литр (л) (id=9dda6c7e-94f6-490e-89bc-9bcca7cd874d)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'unit': Столовая ложка (ст.л.) (id=cb7cc55a-d203-4258-a04d-a8518b5a8b0b)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'unit': Штука (шт) (id=f727732b-3c36-47dc-8446-991533e97b01)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'group': Ингредиенты (id=6fd8c79e-b1fe-4ed8-93f5-3d2db1c4c0ef)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'group': Сырье (id=e60da20e-70d3-47cf-b131-27b9dfa6e3dc)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'group': Полуфабрикаты (id=71214987-abaa-44b6-80b2-ec1f8ec9bf3d)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'group': Упаковка (id=91a03df6-fe45-4dec-a43e-770a406e0ae4)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'group': Готовая продукция (id=7c5c7fbe-fb93-46a1-b028-ccb31cd946af)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'warehouse': Основной склад (id=bdb73f84-76da-4139-9725-8fef5579e52f)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Мука (id=e9e2a066-b654-4657-8c8e-08689ab3ae93)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Сахар (id=c4c42f2b-8d9d-48c7-a6d5-c499f9ec2fd7)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Куриное филе (id=72b71400-a2ba-4441-8122-f5e8e0e1ab00)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Шампиньоны свежие (id=a03ca193-2215-4c2d-942d-477d8d0ce62a)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Сливки 20% (id=44e92b5a-5631-454f-8891-b793046189b8)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Масло растительное (id=8520bf9a-65bd-45cb-b6f0-c43d986c6cb3)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Чеснок (id=95b6e7c3-597e-41bb-876f-0ca1510d4fa8)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Соль (id=4db7d446-cf2e-4f5d-8afc-b28327895d8d)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Паста (феттуччине) (id=6e780334-efad-4f58-967c-fb5933ad2c8d)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Сыр Пармезан (id=1ca5a882-f73e-43b1-a0d8-cc224e51e948)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Сливочно-грибной соус (id=c5c37b1a-5014-439e-a7ad-f6531821c4c0)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Контейнер крафтовый (id=c050a4e6-3dd3-4d8e-9971-4091543eebdd)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'nomenclature': Паста сливочная с курицей (id=3c0fc1b9-a62e-49c4-b2a0-3fe6d6d08ac4)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'recipe': Приготовление соуса (id=4fa2fb6c-37c3-41c6-b6f2-e8c5fbadcf9f)
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'recipe': Сборка пасты (id=de375928-f8a4-43ce-beb6-54a533d2de49)
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Мука, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Мука, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Сахар, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Сахар, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Куриное филе, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Куриное филе, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Шампиньоны свежие, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Шампиньоны свежие, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Сливки 20%, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Сливки 20%, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Масло растительное, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Масло растительное, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Чеснок, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Чеснок, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Соль, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Соль, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Паста (феттуччине), количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Паста (феттуччине), количество: -25.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Сыр Пармезан, количество: 100.0
+[2026-11-28 15:29:05] [INFO] [STORAGE] [WAREHOUSE_TRANSACTION] | Складская операция: Сыр Пармезан, количество: -25.0
+[2026-11-28 15:29:05] [INFO] [CRUD] [CREATE_ENTITY] | Создана сущность 'warehouse': Центральный склад (id=2c29b275-f7b5-4920-b1e0-4b201b57a256)
+[2026-11-28 15:29:05] [INFO] [WEB] [API_REQUEST] | POST /api/entities/warehouse -> 201
+[2026-11-28 15:30:15] [INFO] [CRUD] [UPDATE_ENTITY] | Обновлена сущность 'warehouse': id=2c29b275-f7b5-4920-b1e0-4b201b57a256
+[2026-11-28 15:30:15] [INFO] [WEB] [API_REQUEST] | PUT /api/entities/warehouse/2c29b275-f7b5-4920-b1e0-4b201b57a256 -> 200
+[2026-11-28 15:30:49] [INFO] [CRUD] [DELETE_ENTITY] | Удалена сущность 'warehouse': id=2c29b275-f7b5-4920-b1e0-4b201b57a256
+[2026-11-28 15:30:49] [INFO] [WEB] [API_REQUEST] | DELETE /api/entities/warehouse/2c29b275-f7b5-4920-b1e0-4b201b57a256 -> 200
+[2026-11-28 15:31:19] [INFO] [SETTINGS] [LOAD_SETTINGS] | Загружены настройки: Src/settings.json
+[2026-11-28 15:31:19] [INFO] [SETTINGS] [CHANGE_SETTINGS] | Настройки обновлены
+[2026-11-28 16:44:02] [ERROR] [WEB] [API_REQUEST] | GET /api/entities/warehouse/777 -> 404
+[2026-11-28 16:48:44] [ERROR] [WEB] [API_REQUEST] | PUT /api/entities/warehouse/777 -> 404

@@ -1,5 +1,11 @@
 from Src.Core.abstract_manager import abstract_manager
 from Src.Core.validator import validator, operation_exception
+from Src.Core.event_type import event_type
+from Src.Core.constants import TRANSACTION_KEY
+from Src.Core.log_subsystem import log_subsystem
+from Src.Dtos.log_type_enum import log_type_enum
+from Src.Models.log_model import log_model
+from Src.Logics.observer import observer
 from Src.Logics.settings_manager import settings_manager
 from Src.Logics.reference_index import reference_index
 
@@ -153,8 +159,34 @@ class storage_manager(abstract_manager):
         if key not in self.__data:
             self.__data[key] = []
 
-        if item not in self.__data[key]:
-            self.__data[key].append(item)
+        # Защита от дубликатов
+        if item in self.__data[key]:
+            return
+        self.__data[key].append(item)
+
+        # Оповещение наблюдателей
+        if key == TRANSACTION_KEY:
+            observer.create(
+                event_type.warehouse_transaction(),
+                log_model(
+                    subsystem=log_subsystem.STORAGE,
+                    level=log_type_enum.INFO,
+                    event=event_type.warehouse_transaction(),
+                    message=f"Складская операция: {item}"
+                )
+            )
+            return
+
+        item_id = item.id
+        observer.create(
+            event_type.create_entity(),
+            log_model(
+                subsystem=log_subsystem.CRUD,
+                level=log_type_enum.INFO,
+                event=event_type.create_entity(),
+                message=f"Создана сущность '{key}': {item.name} (id={item_id})"
+            )
+        )
 
     @property
     def data(self) -> dict:
@@ -187,7 +219,7 @@ class storage_manager(abstract_manager):
     @staticmethod
     def transaction_key() -> str:
         """Ключ для транзакций в хранилище"""
-        return "transaction"
+        return TRANSACTION_KEY
         
     @staticmethod
     def normalize_key(key: str) -> str:
@@ -281,6 +313,15 @@ class storage_manager(abstract_manager):
 
         self.__data[k].remove(existing)
         self.rebuild_index()
+        observer.create(
+            event_type.delete_entity(),
+            log_model(
+                subsystem=log_subsystem.CRUD,
+                level=log_type_enum.INFO,
+                event=event_type.delete_entity(),
+                message=f"Удалена сущность '{k}': id={item_id}"
+            )
+        )
         return True
 
     def update_entity(self, entity_type: str, item_id: str, new_item) -> object:
@@ -312,4 +353,13 @@ class storage_manager(abstract_manager):
         idx = self.__data[k].index(existing)
         self.__data[k][idx] = new_item
         self.rebuild_index()
+        observer.create(
+            event_type.update_entity(),
+            log_model(
+                subsystem=log_subsystem.CRUD,
+                level=log_type_enum.INFO,
+                event=event_type.update_entity(),
+                message=f"Обновлена сущность '{k}': id={item_id}"
+            )
+        )
         return new_item
